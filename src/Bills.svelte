@@ -10,17 +10,16 @@
 
   let width;
   let height;
-  let showSecondBill = false;
-  let showGrid = false;
-  let visibleBills = [];
-  let staggerTimeouts = [];
-  let isTransitioning = false; // Flag to track transition state
-  let showAdditionalBills = false; // Flag to control when additional bills appear
-
-  // For fading first bill text to blue
-  let fadeToBlue = false;
-  // For fading first bill text to transparent in step 3
-  let fadeToTransparent = false;
+  // Visualization-only state, controlled by step prop
+  // All scroll/step logic should be handled by Scrolly.svelte
+  // The following are derived from step
+  $: showSecondBill = step === 1;
+  $: showGrid = step >= 4 || step === undefined || step === null;
+  $: showAdditionalBills = step >= 4 || step === undefined || step === null;
+  $: isTransitioning = step === 4;
+  $: fadeToBlue = step === 2 || step >= 4;
+  $: fadeToTransparent = step === 3;
+  // Remove all imperative step logic and timers
   
   // For loading the CSV data
   let billsData = [];
@@ -29,109 +28,7 @@
   let error = null;
 
 
-// Show second bill with a delay when step === 1
-$: if (step === 1) {
-  showSecondBill = false;
-  setTimeout(() => {
-    showSecondBill = true;
-  }, 700);
-} else {
-  showSecondBill = false;
-}
-
-// Fade first bill text to blue in step 0
-$: if (step === 2) {
-  fadeToBlue = false;
-  setTimeout(() => {
-    fadeToBlue = true;
-  }, 400); // Delay before fading to blue
-} else {
-  fadeToBlue = false;
-}
-
-// Fade first bill text to transparent in step 3
-$: if (step === 3) {
-  fadeToTransparent = false;
-  setTimeout(() => {
-    fadeToTransparent = true;
-  }, 400); // Delay before fading to transparent
-} else {
-  fadeToTransparent = false;
-}
-
-// Always keep grid visible for step 4 and beyond
-$: if (step >= 4) {
-  showGrid = true;
-  showAdditionalBills = true;
-}
-
-  // Using a non-reactive approach to manage step transitions
-  let previousStep = -1;
-  
-  function handleStepChange(newStep) {
-    // Handle the case where newStep is undefined/null (when scrolled completely off)
-    if (newStep === undefined || newStep === null) {
-      // If we were at step 4 or higher before, keep that state
-      if (previousStep >= 4) {
-        showGrid = true;
-        isTransitioning = false;
-        showAdditionalBills = true;
-      }
-      return;
-    }
-    
-    // Only process if the step has actually changed
-    if (newStep === previousStep) return;
-    
-    // Update the previous step tracker
-    previousStep = newStep;
-    
-    // Clean up any existing animations
-    staggerTimeouts.forEach(id => {
-      clearTimeout(id);
-      clearInterval(id);
-    });
-    staggerTimeouts = [];
-    
-    if (newStep === 4) {
-      // Step 4 initialization
-      showGrid = true;
-      isTransitioning = true;
-      showAdditionalBills = false; // Start with just the first two bills
-      
-      console.log("Step 4 initiated once");
-      
-      // After a short delay, mark transition as complete
-      const transitionTimeout = setTimeout(() => {
-        isTransitioning = false;
-        console.log("First two bills transition complete");
-      }, 600); // Shortened time for the first two bills transition
-      
-      // Show additional bills shortly after the first bills start moving
-      const additionalBillsTimeout = setTimeout(() => {
-        // Once the first two bills are in place, show the additional bills with fade in
-        showAdditionalBills = true;
-        console.log("Showing additional bills");
-      }, 300); // Start fading in additional bills halfway through the first two bills transition
-      
-      staggerTimeouts.push(transitionTimeout);
-      staggerTimeouts.push(additionalBillsTimeout);
-    } else if (newStep < 4 && newStep !== 1) {
-      // Reset for steps before 4 (except step 1)
-      // Steps after 4 will keep the grid visible
-      showGrid = false;
-      isTransitioning = false;
-      showAdditionalBills = false;
-    } else if (newStep > 4) {
-      // For steps after 4, ensure the grid remains visible but without transitions
-      showGrid = true;
-      isTransitioning = false;
-      showAdditionalBills = true;
-    }
-  }
-  
-  // Watch for step changes
-  $: handleStepChange(step);
+// ...existing code...
 
   // Function to fetch and parse the CSV data
   async function loadBillsData() {
@@ -538,18 +435,18 @@ $: if (step >= 4) {
 
   /* Style for step 3 where all text is invisible, only highlight backgrounds remain */
   .text-invisible :global(.bill-content):not(:has(.blue-text)) {
-    color: transparent !important; /* Make regular text invisible except blue-text */
+    color: rgba(0, 0, 0, 0.6); /* Make text slightly visible instead of completely transparent */
     transition: color 1.2s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .text-invisible :global(.highlight) {
-    color: transparent !important; /* Make regular text invisible */
+    color: white !important; /* Make highlight text visible */
     transition: color 1.2s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   :global(.fade-to-transparent) {
     color: black;
-    transition: color 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: color transparent;
     white-space: normal;
   }
 
@@ -597,10 +494,7 @@ $: if (step >= 4) {
     100% { opacity: 1; }
   }
   
-  /* Blue text stays visible in all steps - no transparency applied */
-  /* .text-invisible :global(.blue-text) {
-    color: transparent !important;
-  } */
+
   
   :global(.bill-content) {
     width: 100%;

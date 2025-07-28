@@ -1,0 +1,118 @@
+AN ACT
+2 RELATING TO THE FAIRNESS IN WOMEN'S SPORTS ACT; AMENDING TITLE 33, IDAHO
+3 CODE, BY THE ADDITION OF A NEW CHAPTER 62, TITLE 33, IDAHO CODE, TO
+4 PROVIDE A SHORT TITLE, TO PROVIDE LEGISLATIVE FINDINGS AND PURPOSE, TO
+5 PROVIDE FOR THE DESIGNATION OF ATHLETIC TEAMS, TO PROVIDE PROTECTION
+6 FOR EDUCATIONAL INSTITUTIONS, TO PROVIDE FOR A CAUSE OF ACTION, AND TO
+7 PROVIDE SEVERABILITY.
+8 Be It Enacted by the Legislature of the State of Idaho:
+9 SECTION 1. That Title 33, Idaho Code, be, and the same is hereby amended
+10 by the addition thereto of a NEW CHAPTER, to be known and designated as Chap11 ter 62, Title 33, Idaho Code, and to read as follows:
+12 CHAPTER 62
+13 FAIRNESS IN WOMEN'S SPORTS ACT
+14 33-6201. SHORT TITLE. This chapter shall be known and may be cited as
+15 the "Fairness in Women's Sports Act."
+16 33-6202. LEGISLATIVE FINDINGS AND PURPOSE. (1) The legislature finds
+17 that there are "inherent differences between men and women," and that these
+18 differences "remain cause for celebration, but not for denigration of the
+19 members of either sex or for artificial constraints on an individual's op20 portunity," United States v. Virginia, 518 U.S. 515, 533 (1996);
+21 (2) These "inherent differences" range from chromosomal and hormonal
+22 differences to physiological differences;
+23 (3) Men generally have "denser, stronger bones, tendons, and liga24 ments" and "larger hearts, greater lung volume per body mass, a higher red
+25 blood cell count, and higher haemoglobin," Neel Burton, The Battle of the
+26 Sexes, Psychology Today (July 2, 2012);
+27 (4) Men also have higher natural levels of testosterone, which affects
+28 traits such as hemoglobin levels, body fat content, the storage and use of
+29 carbohydrates, and the development of type 2 muscle fibers, all of which re30 sult in men being able to generate higher speed and power during physical
+31 activity, Doriane Lambelet Coleman, Sex in Sport, 80 Law and Contemporary
+32 Problems 63, 74 (2017) (quoting Gina Kolata, Men, Women and Speed. 2 Words:
+33 Got Testosterone?, N.Y. Times (Aug. 21, 2008));
+34 (5) The biological differences between females and males, especially
+35 as it relates to natural levels of testosterone, "explain the male and female
+36 secondary sex characteristics which develop during puberty and have life37 long effects, including those most important for success in sport: cate38 gorically different strength, speed, and endurance," Doriane Lambelet Cole39 man and Wickliffe Shreve, "Comparing Athletic Performances: The Best Elite
+40 Women to Boys and Men," Duke Law Center for Sports Law and Policy;
+2
+1 (6) While classifications based on sex are generally disfavored, the
+2 Supreme Court has recognized that "sex classifications may be used to com3 pensate women for particular economic disabilities [they have] suffered, to
+4 promote equal employment opportunity, [and] to advance full development of
+5 the talent and capacities of our Nation's people," United States v. Vir6 ginia, 518 U.S. 515, 533 (1996);
+7 (7) One place where sex classifications allow for the "full develop8 ment of the talent and capacities of our Nation's people" is in the context of
+9 sports and athletics;
+10 (8) Courts have recognized that the inherent, physiological differ11 ences between males and females result in different athletic capabilities.
+12 See e.g. Kleczek v. Rhode Island Interscholastic League, Inc., 612 A.2d
+13 734, 738 (R.I. 1992) ("Because of innate physiological differences, boys
+14 and girls are not similarly situated as they enter athletic competition.");
+15 Petrie v. Ill. High Sch. Ass'n, 394 N.E.2d 855, 861 (Ill. App. Ct. 1979)
+16 (noting that "high school boys [generally possess physiological advantages
+17 over] their girl counterparts" and that those advantages give them an unfair
+18 lead over girls in some sports like "high school track");
+19 (9) A recent study of female and male Olympic performances since 1983
+20 found that, although athletes from both sexes improved over the time span,
+21 the "gender gap" between female and male performances remained stable.
+22 "These suggest that women's performances at the high level will never match
+23 those of men." Valerie Thibault et al., Women and men in sport performance:
+24 The gender gap has not evolved since 1983, 9 Journal of Sports Science and
+25 Medicine 214, 219 (2010);
+26 (10) As Duke Law professor and All-American track athlete Doriane Cole27 man, tennis champion Martina Navratilova, and Olympic track gold medalist
+28 Sanya Richards-Ross recently wrote: "The evidence is unequivocal that
+29 starting in puberty, in every sport except sailing, shooting, and riding,
+30 there will always be significant numbers of boys and men who would beat the
+31 best girls and women in head-to-head competition. Claims to the contrary are
+32 simply a denial of science," Doriane Coleman, Martina Navratilova, et al.,
+33 Pass the Equality Act, But Don't Abandon Title IX, Washington Post (Apr. 29,
+34 2019);
+35 (11) The benefits that natural testosterone provides to male athletes
+36 is not diminished through the use of puberty blockers and cross-sex hor37 mones. A recent study on the impact of such treatments found that even "after
+38 12 months of hormonal therapy," a man who identifies as a woman and is taking
+39 cross-sex hormones "had an absolute advantage" over female athletes and
+40 "will still likely have performance benefits" over women, Tommy Lundberg
+41 et al., "Muscle strength, size and composition following 12 months of gen42 der-affirming treatment in transgender individuals: retained advantage for
+43 the transwomen," Karolinksa Institutet (Sept. 26, 2019); and
+44 (12) Having separate sex-specific teams furthers efforts to promote sex
+45 equality. Sex-specific teams accomplish this by providing opportunities
+46 for female athletes to demonstrate their skill, strength, and athletic abil47 ities while also providing them with opportunities to obtain recognition and
+48 accolades, college scholarships, and the numerous other long-term benefits
+49 that flow from success in athletic endeavors.
+3
+1 33-6203. DESIGNATION OF ATHLETIC TEAMS. (1) Interscholastic, inter2 collegiate, intramural, or club athletic teams or sports that are sponsored
+3 by a public primary or secondary school, a public institution of higher edu4 cation, or any school or institution whose students or teams compete against
+5 a public school or institution of higher education shall be expressly desig6 nated as one (1) of the following based on biological sex:
+7 (a) Males, men, or boys;
+8 (b) Females, women, or girls; or
+9 (c) Coed or mixed.
+10 (2) Athletic teams or sports designated for females, women, or girls
+11 shall not be open to students of the male sex.
+12 (3) A dispute regarding a student's sex shall be resolved by the school
+13 or institution by requesting that the student provide a health examination
+14 and consent form or other statement signed by the student's personal health
+15 care provider that shall verify the student's biological sex. The health
+16 care provider may verify the student's biological sex as part of a routine
+17 sports physical examination relying only on one (1) or more of the following:
+18 the student's reproductive anatomy, genetic makeup, or normal endogenously
+19 produced testosterone levels. The state board of education shall promul20 gate rules for schools and institutions to follow regarding the receipt and
+21 timely resolution of such disputes consistent with this subsection.
+22 33-6204. PROTECTION FOR EDUCATIONAL INSTITUTIONS. A government
+23 entity, any licensing or accrediting organization, or any athletic associa24 tion or organization shall not entertain a complaint, open an investigation,
+25 or take any other adverse action against a school or an institution of higher
+26 education for maintaining separate interscholastic, intercollegiate, in27 tramural, or club athletic teams or sports for students of the female sex.
+28 33-6205. CAUSE OF ACTION. (1) Any student who is deprived of an ath29 letic opportunity or suffers any direct or indirect harm as a result of a vi30 olation of this chapter shall have a private cause of action for injunctive
+31 relief, damages, and any other relief available under law against the school
+32 or institution of higher education.
+33 (2) Any student who is subject to retaliation or other adverse action by
+34 a school, institution of higher education, or athletic association or organ35 ization as a result of reporting a violation of this chapter to an employee
+36 or representative of the school, institution, or athletic association or or37 ganization, or to any state or federal agency with oversight of schools or
+38 institutions of higher education in the state, shall have a private cause of
+39 action for injunctive relief, damages, and any other relief available under
+40 law against the school, institution, or athletic association or organiza41 tion.
+42 (3) Any school or institution of higher education that suffers any di43 rect or indirect harm as a result of a violation of this chapter shall have a
+44 private cause of action for injunctive relief, damages, and any other relief
+45 available under law against the government entity, licensing or accrediting
+46 organization, or athletic association or organization.
+47 (4) All civil actions must be initiated within two (2) years after the
+48 harm occurred. Persons or organizations who prevail on a claim brought pur-
+4
+1 suant to this section shall be entitled to monetary damages, including for
+2 any psychological, emotional, and physical harm suffered, reasonable attor3 ney's fees and costs, and any other appropriate relief.
+4 33-6206. SEVERABILITY. The provisions of this chapter are hereby de5 clared to be severable and if any provision of this chapter or the applica6 tion of such provision to any person or circumstance is declared invalid for
+7 any reason, such declaration shall not affect the validity of the remaining
+8 portions of this chapter.
