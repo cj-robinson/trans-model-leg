@@ -59,10 +59,27 @@ $: if (step === 3) {
   fadeToTransparent = false;
 }
 
+// Always keep grid visible for step 4 and beyond
+$: if (step >= 4) {
+  showGrid = true;
+  showAdditionalBills = true;
+}
+
   // Using a non-reactive approach to manage step transitions
   let previousStep = -1;
   
   function handleStepChange(newStep) {
+    // Handle the case where newStep is undefined/null (when scrolled completely off)
+    if (newStep === undefined || newStep === null) {
+      // If we were at step 4 or higher before, keep that state
+      if (previousStep >= 4) {
+        showGrid = true;
+        isTransitioning = false;
+        showAdditionalBills = true;
+      }
+      return;
+    }
+    
     // Only process if the step has actually changed
     if (newStep === previousStep) return;
     
@@ -99,12 +116,17 @@ $: if (step === 3) {
       
       staggerTimeouts.push(transitionTimeout);
       staggerTimeouts.push(additionalBillsTimeout);
-      staggerTimeouts.push(transitionTimeout);
-    } else if (newStep !== 1) {
-      // Reset for other steps except step 1
+    } else if (newStep < 4 && newStep !== 1) {
+      // Reset for steps before 4 (except step 1)
+      // Steps after 4 will keep the grid visible
       showGrid = false;
       isTransitioning = false;
       showAdditionalBills = false;
+    } else if (newStep > 4) {
+      // For steps after 4, ensure the grid remains visible but without transitions
+      showGrid = true;
+      isTransitioning = false;
+      showAdditionalBills = true;
     }
   }
   
@@ -394,8 +416,8 @@ $: if (step === 3) {
         </div>
       </div>
     </div>
-  {:else if step === 4}
-    <!-- Step 4: Grid of 10 bills, highlight, no text visible, animated in staggered -->
+  {:else if step >= 4}
+    <!-- Step 4+: Grid of 10 bills, highlight, no text visible, animated in staggered -->
     {#if showGrid}
       <div class="bill-grid">
         <!-- First two bills - transform from step 3 -->

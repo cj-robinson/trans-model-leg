@@ -44,6 +44,11 @@
       <Bills step={value} />
     </div>
   </div>
+  <div class='body-text'>
+  <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis perferendis vitae nulla velit quidem explicabo, magni nesciunt quam non quia! Aliquam modi provident fuga obcaecati commodi delectus adipisci sint corrupti.</p>
+  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic ullam perferendis similique repellat nemo? Quia molestiae recusandae minima sit magnam fugit, in nostrum totam officia voluptatum laudantium libero enim pariatur.</p>
+  <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Soluta, est earum impedit veritatis atque minus sint repudiandae eos quidem aspernatur fugit recusandae adipisci enim dolor itaque officiis ipsum, asperiores quos.</p>
+  </div>
 	<div class='hero'>
 		<h1> 
 			Thanks!
