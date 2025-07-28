@@ -9,7 +9,8 @@
   const steps = [
 		 "<p>This is Idaho's H.B 500, which Rep. Ehardt admitted was largely authored by the Alliance to Defend Freedom.</p>",
     "<p>Here's another bill introduced in Montana the year after Idaho's bill was introduced.</p>",
-    "<p>The two bills are titled the same and are markedly similar. <span background='#0074d9'>;Blue text</span> indicates phrases repeated directly from the Idaho bill. </p>",
+    "<p>The two bills are titled the same and are markedly similar. <span style='background:#0074d9; color: white; border-radius: 2px;'>Blue text</span> indicates phrases repeated directly from the Idaho bill. </p>",
+    "<p>Bills across the country mirror this model legislation. </p>",
     "<p>Bills across the country mirror this model legislation. </p>"
   ];
 </script>

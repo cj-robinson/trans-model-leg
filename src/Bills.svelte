@@ -80,24 +80,26 @@ $: if (step === 3) {
       // Step 4 initialization
       showGrid = true;
       isTransitioning = true;
-      showAdditionalBills = false; // Hide additional bills initially
+      showAdditionalBills = false; // Start with just the first two bills
       
-      // Start with just the first two bills
       console.log("Step 4 initiated once");
       
-      // After a delay, mark transition as complete
+      // After a short delay, mark transition as complete
       const transitionTimeout = setTimeout(() => {
         isTransitioning = false;
         console.log("First two bills transition complete");
-      }, 1200); // Extended time for the initial two bills to transition
-      staggerTimeouts.push(transitionTimeout);
+      }, 600); // Shortened time for the first two bills transition
       
-      // After first two bills complete their transition, show additional bills
-      const showAdditionalTimeout = setTimeout(() => {
+      // Show additional bills shortly after the first bills start moving
+      const additionalBillsTimeout = setTimeout(() => {
+        // Once the first two bills are in place, show the additional bills with fade in
         showAdditionalBills = true;
-        console.log("Now showing additional bills");
-      }, 1500); // Give the first two bills time to settle before bringing in the rest
-      staggerTimeouts.push(showAdditionalTimeout);
+        console.log("Showing additional bills");
+      }, 300); // Start fading in additional bills halfway through the first two bills transition
+      
+      staggerTimeouts.push(transitionTimeout);
+      staggerTimeouts.push(additionalBillsTimeout);
+      staggerTimeouts.push(transitionTimeout);
     } else if (newStep !== 1) {
       // Reset for other steps except step 1
       showGrid = false;
@@ -415,18 +417,12 @@ $: if (step === 3) {
           </div>
           <div class="bill-content in-grid fade-highlights">{@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightNGrams, step, 1).replace('bill-content','bill-content in-grid')}</div>
         </div>
-        <!-- Remaining bills: only visible after the first two have settled -->
+        <!-- Remaining bills: fade in after the first two have moved -->
         {#if showAdditionalBills}
           {#each Array(8) as _, i}
             <div 
-              class="bill no-text text-invisible" 
-              in:fly={{ 
-                x: (i % 4 < 2 ? -300 + (i % 2) * 300 : 300 - (i % 2) * 300), 
-                y: (i < 4 ? -250 : 250), 
-                duration: 1200, 
-                delay: 50 + i * 120, 
-                easing: cubicOut 
-              }}
+              class="bill no-text text-invisible bill-fade-in"
+              style="animation-delay: {100 + i * 60}ms;"
             >
               <div class="bill-header small">
                 <span class="bill-state">{getBillInfo(i + 2).bill?.state || ''}</span>
@@ -494,7 +490,7 @@ $: if (step === 3) {
   }
 
   :global(.highlight) {
-    background: #0074d9;
+    background: green;
     color: #fff;
     border-radius: 1.5px;
     transition: background 0.5s;
@@ -515,7 +511,7 @@ $: if (step === 3) {
   }
   
   :global(.fade-to-blue.blue) {
-    color: #0074d9;
+    color:green;
   }
 
   /* Style for step 3 where all text is invisible, only highlight backgrounds remain */
@@ -542,12 +538,12 @@ $: if (step === 3) {
   /* Keep highlight background visible even when text is transparent */
   :global(.fade-to-transparent.transparent .highlight) {
     color: transparent; /* Hide text inside highlight */
-    background: #0074d9 !important; /* Keep background color */
+    background: green !important; /* Keep background color */
   }
 
   /* Ensure blue-text is always visible, even in .text-invisible */
   .text-invisible :global(.blue-text) {
-    color: #0074d9 !important;
+    color: green !important;
     transition: color 0.5s;
   }
 
@@ -570,6 +566,11 @@ $: if (step === 3) {
   }
 
   @keyframes fadeHighlight {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  @keyframes fadeIn {
     0% { opacity: 0; }
     100% { opacity: 1; }
   }
@@ -609,7 +610,7 @@ $: if (step === 3) {
 
   .no-text {
     background: #f8f8f8;
-    border: 2px solid #0074d9;
+    border: 2px solid black;
     position: relative;
     display: flex;
     align-items: center;
@@ -624,26 +625,30 @@ $: if (step === 3) {
   
   /* Special styles for the transitioning bills */
   .transitioning {
-    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease-out;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease-out;
     transform-origin: center center;
     will-change: transform, opacity;
   }
   
   /* Styles for the transition effect */
   .from-bill-one {
-    animation: move-bill-one 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: move-bill-one 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   
   .from-bill-two {
-    animation: move-bill-two 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: move-bill-two 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  
+  /* Animation for additional bills fading in */
+  .bill-fade-in {
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out forwards;
+    will-change: opacity;
   }
   
   @keyframes move-bill-one {
     0% {
       transform: translate(calc(-50% + 160px), 0) scale(2.5);
-      opacity: 1;
-    }
-    20% {
       opacity: 1;
     }
     100% {
@@ -655,9 +660,6 @@ $: if (step === 3) {
   @keyframes move-bill-two {
     0% {
       transform: translate(calc(50% - 160px), 0) scale(2.5);
-      opacity: 1;
-    }
-    20% {
       opacity: 1;
     }
     100% {
