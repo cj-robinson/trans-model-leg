@@ -7,12 +7,10 @@
 	
   let value;
   const steps = [
-		 "<p>Here's the first bill</p>",
-    "<p>Here's the second bill</p>",
-    "<p>This is the similar language</p>",
-    "<p>Here are all the bills we found</p>",
-    "<p>Here are all the bills we found</p>",
-
+		 "<p>This is Idaho's H.B 500, which Rep. Ehardt admitted was largely authored by the Alliance to Defend Freedom.</p>",
+    "<p>Here's another bill introduced in Montana the year after Idaho's bill was introduced.</p>",
+    "<p>The two bills are titled the same and are markedly similar. <span background='#0074d9'>;Blue text</span> indicates phrases repeated directly from the Idaho bill. </p>",
+    "<p>Bills across the country mirror this model legislation. </p>"
   ];
 </script>
 
@@ -25,6 +23,11 @@
 			By C.J. Robinson
 		</h2>
 	</div>
+  <div class='body-text'>
+  <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis perferendis vitae nulla velit quidem explicabo, magni nesciunt quam non quia! Aliquam modi provident fuga obcaecati commodi delectus adipisci sint corrupti.</p>
+  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic ullam perferendis similique repellat nemo? Quia molestiae recusandae minima sit magnam fugit, in nostrum totam officia voluptatum laudantium libero enim pariatur.</p>
+  <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Soluta, est earum impedit veritatis atque minus sint repudiandae eos quidem aspernatur fugit recusandae adipisci enim dolor itaque officiis ipsum, asperiores quos.</p>
+  </div>
   <div class="section-container">
     <div class="steps-container">
       <Scrolly bind:value>
@@ -51,8 +54,14 @@
 	:global(body) {
 		overflow-x: hidden;
 	}
+
+  .body-text {
+    max-width: 60%;
+    margin: auto;
+    font-size: 1.2em;
+  }
 	
-	.hero {
+	.hero { 
 		height: 60vh;
 		display: flex;
 		place-items: center;

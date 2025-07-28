@@ -3,8 +3,10 @@
   
   import { scaleLinear, scaleSqrt } from "d3-scale";
   import { extent, min, max } from "d3-array";
-  import { fly } from 'svelte/transition';
+  import { fly, fade } from 'svelte/transition';
+  import { cubicOut } from 'svelte/easing';
   import { onMount } from 'svelte';
+  import Papa from 'papaparse';
 
   let width;
   let height;
@@ -13,20 +15,49 @@
   let visibleBills = [];
   let staggerTimeouts = [];
   let isTransitioning = false; // Flag to track transition state
+  let showAdditionalBills = false; // Flag to control when additional bills appear
+
+  // For fading first bill text to blue
+  let fadeToBlue = false;
+  // For fading first bill text to transparent in step 3
+  let fadeToTransparent = false;
   
   // For loading the CSV data
   let billsData = [];
+  let selectedBills = []; // Initialize selectedBills array
   let loading = true;
   let error = null;
 
-  $: if (step === 1) {
-    showSecondBill = false;
-    setTimeout(() => {
-      showSecondBill = true;
-    }, 400); // adjust delay as needed
-  } else {
-    showSecondBill = false;
-  }
+
+// Show second bill with a delay when step === 1
+$: if (step === 1) {
+  showSecondBill = false;
+  setTimeout(() => {
+    showSecondBill = true;
+  }, 700);
+} else {
+  showSecondBill = false;
+}
+
+// Fade first bill text to blue in step 0
+$: if (step === 2) {
+  fadeToBlue = false;
+  setTimeout(() => {
+    fadeToBlue = true;
+  }, 400); // Delay before fading to blue
+} else {
+  fadeToBlue = false;
+}
+
+// Fade first bill text to transparent in step 3
+$: if (step === 3) {
+  fadeToTransparent = false;
+  setTimeout(() => {
+    fadeToTransparent = true;
+  }, 400); // Delay before fading to transparent
+} else {
+  fadeToTransparent = false;
+}
 
   // Using a non-reactive approach to manage step transitions
   let previousStep = -1;
@@ -49,21 +80,29 @@
       // Step 4 initialization
       showGrid = true;
       isTransitioning = true;
+      showAdditionalBills = false; // Hide additional bills initially
       
       // Start with just the first two bills
       console.log("Step 4 initiated once");
       
-      // After a delay, add the rest of the bills
+      // After a delay, mark transition as complete
       const transitionTimeout = setTimeout(() => {
         isTransitioning = false;
-        console.log("Transition complete, showing all bills");
-      }, 1200); // Time for the initial two bills to transition
-      
+        console.log("First two bills transition complete");
+      }, 1200); // Extended time for the initial two bills to transition
       staggerTimeouts.push(transitionTimeout);
-    } else {
-      // Reset for other steps
+      
+      // After first two bills complete their transition, show additional bills
+      const showAdditionalTimeout = setTimeout(() => {
+        showAdditionalBills = true;
+        console.log("Now showing additional bills");
+      }, 1500); // Give the first two bills time to settle before bringing in the rest
+      staggerTimeouts.push(showAdditionalTimeout);
+    } else if (newStep !== 1) {
+      // Reset for other steps except step 1
       showGrid = false;
       isTransitioning = false;
+      showAdditionalBills = false;
     }
   }
   
@@ -73,158 +112,203 @@
   // Function to fetch and parse the CSV data
   async function loadBillsData() {
     try {
+      console.log("Loading bill data...");
       const response = await fetch('/fiwsa_bills_updated.csv');
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       
       const text = await response.text();
-      const rows = text.trim().split('\n');
-      const headers = rows[0].split(',');
-      
-      // Parse CSV into an array of objects
-      const parsedData = rows.slice(1).map(row => {
-        // Handle commas inside quotes properly
-        const values = [];
-        let currentValue = '';
-        let insideQuotes = false;
-        
-        for (let i = 0; i < row.length; i++) {
-          const char = row[i];
-          
-          if (char === '"' && (i === 0 || row[i - 1] !== '\\')) {
-            insideQuotes = !insideQuotes;
-          } else if (char === ',' && !insideQuotes) {
-            values.push(currentValue);
-            currentValue = '';
-          } else {
-            currentValue += char;
-          }
-        }
-        
-        // Add the last value
-        values.push(currentValue);
-        
-        // Create an object from headers and values
-        const obj = {};
-        headers.forEach((header, index) => {
-          obj[header] = values[index] || '';
-        });
-        
-        return obj;
-      });
-      
-      // Filter for bills with actual text
-      billsData = parsedData.filter(bill => bill.text && bill.text.length > 100);
-      console.log(`Loaded ${billsData.length} bills with text`);
-      
-      // Select bills that have the relevant highlight text (about sports)
+      const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
+      billsData = parsed.data.filter(bill => bill.text && bill.text.length > 100);
       selectedBills = billsData.slice(0, 10); // Take first 10 bills for now
+      console.log(`Selected ${selectedBills.length} bills for display`);
       
       loading = false;
+      return { success: true };
     } catch (e) {
       console.error("Error loading CSV:", e);
       error = e.message;
       loading = false;
+      return { success: false, error: e.message };
     }
   }
   
-  // Variable to store selected bills for the visualization
-  let selectedBills = [];
+  // Initialize selectedBills once at the top level
+  // (Removed duplicate declaration)
   
-  // Extract bill text and highlights based on index
-  function getBillContent(index) {
-    if (!selectedBills.length) return { billText: "", highlightText: "" };
-    
-    const bill = selectedBills[index % selectedBills.length];
-    // Extract a sample of the bill text (first 200 chars)
-    const billText = bill.text ? bill.text.substring(0, 200) : "";
-    
-    // For highlights, we'll look for phrases related to "biological sex" or similar terms
-    const billFullText = bill.text || "";
-    let highlightText = "";
-    
-    // Common phrases in these bills we want to highlight
-    const possibleHighlights = [
-      "biological sex",
-      "inherent differences between men and women",
-      "sex assigned at birth",
-      "Save Women's Sports",
-      "separate sex-specific teams"
-    ];
-    
-    // Find the first match in the text
-    for (const phrase of possibleHighlights) {
-      if (billFullText.includes(phrase)) {
-        highlightText = phrase;
-        break;
+  // --- N-gram extraction from original_act.txt ---
+  // Dynamically load the act text from static/original_act.txt
+  let originalActText = '';
+  let actNGrams = [];
+
+  async function loadOriginalActText() {
+    try {
+      const response = await fetch('/original_act.txt');
+      if (!response.ok) throw new Error('Failed to load original_act.txt');
+      originalActText = await response.text();
+      actNGrams = getNGrams(originalActText.toLowerCase());
+    } catch (e) {
+      console.error('Error loading original_act.txt:', e);
+      originalActText = '';
+      actNGrams = [];
+    }
+  }
+
+  // Utility: get all n-grams from a string (n=4 to 8)
+  function getNGrams(text, minN = 4, maxN = 8) {
+    const words = text.replace(/[^a-zA-Z0-9' ]/g, '').split(/\s+/).filter(Boolean);
+    const ngrams = new Set();
+    for (let n = minN; n <= maxN; n++) {
+      for (let i = 0; i <= words.length - n; i++) {
+        ngrams.add(words.slice(i, i + n).join(' '));
       }
     }
-    
-    // If no matches found, use the bill title as highlight
-    if (!highlightText && bill.title) {
-      highlightText = bill.title.substring(0, 40);
-    }
-    
-    return { billText, highlightText };
+    return Array.from(ngrams);
+  }
+
+  // Helper: find all n-grams from act in bill text
+  function findMatchingNGrams(billText) {
+    const text = billText.toLowerCase();
+    if (!actNGrams || actNGrams.length === 0) return [];
+    return actNGrams.filter(ngram => text.includes(ngram));
+  }
+
+  // Extract bill text and highlights based on index
+  function getBillContent(index) {
+    if (!selectedBills.length) return { billText: "", highlightNGrams: [] };
+    const bill = selectedBills[index % selectedBills.length];
+    let billText = bill.text ? bill.text.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim() : "";
+    const highlightNGrams = findMatchingNGrams(billText);
+    return { billText, highlightNGrams };
   }
   
   // Initialize data on component mount
-  onMount(() => {
-    loadBillsData();
+  onMount(async () => {
+    // Load original act text first to ensure it's available immediately
+    console.log("Loading original act text...");
+    await loadOriginalActText();
+    console.log("Original act text loaded, length:", originalActText.length);
+
+    console.log("Component mounted, loading bill data...");
+    // Load data immediately when component mounts
+    const result = await loadBillsData();
+    
+    // If we don't have any bills after loading, try once more
+    if ((!result.success || selectedBills.length === 0) && !error) {
+      console.log("No bills loaded on first attempt, trying again after delay...");
+      // Wait a moment before trying again
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await loadBillsData();
+      
+      // If we still don't have data, log an error
+      if (selectedBills.length === 0) {
+        console.error("Failed to load bill data after multiple attempts");
+      } else {
+        console.log(`Successfully loaded ${selectedBills.length} bills on second attempt`);
+      }
+    } else {
+      console.log(`Successfully loaded ${selectedBills.length} bills on first attempt`);
+    }
   });
 
-  // Helper to highlight text
-  function getHighlighted(text, highlight, step) {
+  // Helper to highlight all matching n-grams in the bill text
+  function getHighlighted(text, highlightNGrams, step, index, fadeToBlue = false) {
+    // Special case: When on step 0 and it's the first bill, fade to blue
+    if (step === 0 && index === 0) {
+      return `<div class=\"bill-content\"><span class=\"fade-to-blue${fadeToBlue ? ' blue' : ''}\">${text}</span></div>`;
+    }
+    // Special case: When on step 2 and it's the first bill, fade to blue
+    if (step === 2 && index === 0) {
+      return `<div class=\"bill-content\"><span class=\"fade-to-blue${fadeToBlue ? ' blue' : ''}\">${text}</span></div>`;
+    }
+    // Special case: When on step 3 and it's the first bill, keep blue text always visible
+    if (step === 3 && index === 0) {
+      return `<div class=\"bill-content\"><span class=\"blue-text\">${text}</span></div>`;
+    }
+    // Special case: When on step 3 and it's the second bill, fade only the regular text to transparent, keep highlights visible
+    if (step === 3 && index === 1) {
+      // Apply highlights first, then make the non-highlighted text transparent
+      if (!highlightNGrams || highlightNGrams.length === 0) return `<div class=\"bill-content fade-to-transparent${fadeToTransparent ? ' transparent' : ''}\">${text}</div>`;
+      
+      let highlightedText = text;
+      // Sort n-grams by length descending to avoid nested highlights
+      const sortedNGrams = [...highlightNGrams].sort((a, b) => b.length - a.length);
+      for (const ngram of sortedNGrams) {
+        const escaped = ngram.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(escaped, 'gi');
+        highlightedText = highlightedText.replace(regex, match => `<span class="highlight">${match}</span>`);
+      }
+      return `<div class=\"bill-content fade-to-transparent${fadeToTransparent ? ' transparent' : ''}\">${highlightedText}</div>`;
+    }
+    // Special case: When on step 4 and it's the first bill (original act), make text blue instead of highlighting
+    if (step === 4 && index === 0) {
+      return `<div class=\"bill-content\"><span class=\"blue-text\">${text}</span></div>`;
+    }
+    
     if (step === 2 || step === 3 || step === 4) {
-      // Only highlight in steps 2, 3, 4
-      if (!highlight) return `<div class="bill-content">${text}</div>`;
-      
-      // Use regex for whole word match, escape special chars
-      const escaped = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(escaped, 'g');
-      
-      // Wrap the entire content in a div to ensure proper text flow
-      return `<div class="bill-content">${text.replace(
-        regex,
-        `<span class="highlight">${highlight}</span>`
-      )}</div>`;
+      if (!highlightNGrams || highlightNGrams.length === 0) return `<div class="bill-content">${text}</div>`;
+      let highlightedText = text;
+      // Sort n-grams by length descending to avoid nested highlights
+      const sortedNGrams = [...highlightNGrams].sort((a, b) => b.length - a.length);
+      for (const ngram of sortedNGrams) {
+        const escaped = ngram.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(escaped, 'gi');
+        highlightedText = highlightedText.replace(regex, match => `<span class="highlight">${match}</span>`);
+      }
+      return `<div class="bill-content">${highlightedText}</div>`;
     }
     return `<div class="bill-content">${text}</div>`;
   }
   
   // Helper to get bill info for display
   function getBillInfo(index) {
-    if (loading || !selectedBills.length) {
-      return { 
-        billText: "Loading bill content...", 
-        highlightText: ""
+    // Special case for index 0 - return original act text
+    if (index === 0) {
+      // Format the original act text to be more readable
+      let formattedText = originalActText;
+      formattedText = formattedText.replace(/[\r\n]+/g, " ");
+      formattedText = formattedText.replace(/\s+/g, " ").trim();
+      return {
+        billText: formattedText,
+        highlightNGrams: [],
+        bill: { state: "ID", bill_number: "HB 500" }
       };
     }
-    
-    const bill = selectedBills[index % selectedBills.length];
-    const shortText = bill.text ? 
-      bill.text.substring(0, 200) + "..." : 
-      "Bill text not available";
-    
-    // Find highlight text
-    let highlightText = "";
-    const possibleHighlights = [
-      "biological sex",
-      "inherent differences",
-      "sex assigned at birth",
-      "Save Women's Sports",
-      "separate sex-specific teams"
-    ];
-    
-    for (const phrase of possibleHighlights) {
-      if (bill.text && bill.text.includes(phrase)) {
-        highlightText = phrase;
-        break;
-      }
+
+    if (loading) {
+      return {
+        billText: "Loading bill content...",
+        highlightNGrams: [],
+        bill: { state: "...", bill_number: "..." }
+      };
     }
-    
-    return { billText: shortText, highlightText, bill };
+    if (!selectedBills || !selectedBills.length) {
+      console.warn(`No bills available yet for index ${index}`);
+      return {
+        billText: "Bill data not available",
+        highlightNGrams: [],
+        bill: { state: "N/A", bill_number: "N/A" }
+      };
+    }
+    // For indices > 0, adjust index to get the correct bill from selectedBills
+    const adjustedIndex = (index - 1) % selectedBills.length;
+    const bill = selectedBills[adjustedIndex];
+    if (!bill) {
+      console.warn(`No bill found at index ${adjustedIndex}`);
+      return {
+        billText: "Bill data not available",
+        highlightNGrams: [],
+        bill: { state: "N/A", bill_number: "N/A" }
+      };
+    }
+    let fullText = bill.text ? bill.text : "Bill text not available";
+    fullText = fullText.replace(/<[^>]*>/g, "");
+    fullText = fullText.replace(/[0-9]+/g, "");
+    fullText = fullText.replace(/[\r\n]+/g, " ");
+    fullText = fullText.replace(/\s+/g, " ").trim();
+    const highlightNGrams = findMatchingNGrams(fullText);
+    return { billText: fullText, highlightNGrams, bill };
   }
 
 </script>
@@ -235,23 +319,15 @@
   bind:offsetWidth={width}
   bind:offsetHeight={height}
 >
-  {#if loading}
-    <div class="loading-indicator">Loading bill data...</div>
-  {:else if error}
-    <div class="error-message">Error loading data: {error}</div>
-  {:else if step === 0}
-    <!-- Step 0: One bill with text -->
-    {#if selectedBills.length > 0}
-      <div class="bill">
-        <div class="bill-header">
-          <span class="bill-state">{getBillInfo(0).bill?.state || ''}</span>
-          <span class="bill-number">{getBillInfo(0).bill?.bill_number || ''}</span>
-        </div>
-        {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightText, step)}
+  {#if step === 0}
+    <!-- Step 0: One bill with text, fade to blue -->
+    <div class="bill" in:fade={{ duration: 1000, delay: 200 }}>
+      <div class="bill-header">
+        <span class="bill-state">{getBillInfo(0).bill?.state || ''}</span>
+        <span class="bill-number">{getBillInfo(0).bill?.bill_number || ''}</span>
       </div>
-    {:else}
-      <div class="bill">No bill data available</div>
-    {/if}
+      {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightNGrams, step, 0, fadeToBlue)}
+    </div>
   {:else if step === 1}
     <!-- Step 1: Two bills side by side, second bill flies in from right after delay -->
     <div class="bill-row">
@@ -260,7 +336,7 @@
           <span class="bill-state">{getBillInfo(0).bill?.state || ''}</span>
           <span class="bill-number">{getBillInfo(0).bill?.bill_number || ''}</span>
         </div>
-        {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightText, step)}
+        {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightNGrams, step, 0)}
       </div>
       {#if showSecondBill}
         <div class="bill" in:fly={{ x: 500, duration: 700 }}>
@@ -268,7 +344,7 @@
             <span class="bill-state">{getBillInfo(1).bill?.state || ''}</span>
             <span class="bill-number">{getBillInfo(1).bill?.bill_number || ''}</span>
           </div>
-          {@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightText, step)}
+          {@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightNGrams, step, 1)}
         </div>
       {/if}
     </div>
@@ -280,15 +356,18 @@
           <span class="bill-state">{getBillInfo(0).bill?.state || ''}</span>
           <span class="bill-number">{getBillInfo(0).bill?.bill_number || ''}</span>
         </div>
-        {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightText, step)}
+        <div class="fade-highlights-step2 fade-text-step2">
+          {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightNGrams, step, 0, fadeToBlue)}
+        </div>
       </div>
-      
       <div class="bill">
         <div class="bill-header">
           <span class="bill-state">{getBillInfo(1).bill?.state || ''}</span>
           <span class="bill-number">{getBillInfo(1).bill?.bill_number || ''}</span>
         </div>
-        {@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightText, step)}
+        <div class="fade-highlights-step2 fade-text-step2">
+          {@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightNGrams, step, 1)}
+        </div>
       </div>
     </div>
   {:else if step === 3}
@@ -299,15 +378,18 @@
           <span class="bill-state">{getBillInfo(0).bill?.state || ''}</span>
           <span class="bill-number">{getBillInfo(0).bill?.bill_number || ''}</span>
         </div>
-        {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightText, step)}
+        <div class="fade-highlights">
+          {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightNGrams, step, 0, fadeToBlue)}
+        </div>
       </div>
-      
       <div class="bill bill-two text-invisible">
         <div class="bill-header">
           <span class="bill-state">{getBillInfo(1).bill?.state || ''}</span>
           <span class="bill-number">{getBillInfo(1).bill?.bill_number || ''}</span>
         </div>
-        {@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightText, step)}
+        <div class="fade-highlights">
+          {@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightNGrams, step, 1, false, fadeToTransparent)}
+        </div>
       </div>
     </div>
   {:else if step === 4}
@@ -322,9 +404,8 @@
             <span class="bill-state">{getBillInfo(0).bill?.state || ''}</span>
             <span class="bill-number">{getBillInfo(0).bill?.bill_number || ''}</span>
           </div>
-          {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightText, step)}
+          <div class="bill-content in-grid fade-highlights">{@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightNGrams, step, 0).replace('bill-content','bill-content in-grid')}</div>
         </div>
-        
         <div
           class="bill no-text text-invisible {isTransitioning ? 'transitioning from-bill-two' : ''}"
         >
@@ -332,26 +413,26 @@
             <span class="bill-state">{getBillInfo(1).bill?.state || ''}</span>
             <span class="bill-number">{getBillInfo(1).bill?.bill_number || ''}</span>
           </div>
-          {@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightText, step)}
+          <div class="bill-content in-grid fade-highlights">{@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightNGrams, step, 1).replace('bill-content','bill-content in-grid')}</div>
         </div>
-        
-        <!-- Remaining bills (only visible after transition) -->
-        {#if !isTransitioning}
+        <!-- Remaining bills: only visible after the first two have settled -->
+        {#if showAdditionalBills}
           {#each Array(8) as _, i}
             <div 
               class="bill no-text text-invisible" 
               in:fly={{ 
-                x: (i % 4 < 2 ? -200 + (i % 2) * 200 : i % 2 * 200), 
-                y: (i < 4 ? -200 : 200), 
-                duration: 1000, 
-                delay: 100 + i * 100 
+                x: (i % 4 < 2 ? -300 + (i % 2) * 300 : 300 - (i % 2) * 300), 
+                y: (i < 4 ? -250 : 250), 
+                duration: 1200, 
+                delay: 50 + i * 120, 
+                easing: cubicOut 
               }}
             >
               <div class="bill-header small">
                 <span class="bill-state">{getBillInfo(i + 2).bill?.state || ''}</span>
                 <span class="bill-number">{getBillInfo(i + 2).bill?.bill_number || ''}</span>
               </div>
-              {@html getHighlighted(getBillInfo(i + 2).billText, getBillInfo(i + 2).highlightText, step)}
+              <div class="bill-content in-grid fade-highlights">{@html getHighlighted(getBillInfo(i + 2).billText, getBillInfo(i + 2).highlightNGrams, step, i + 2).replace('bill-content','bill-content in-grid')}</div>
             </div>
           {/each}
         {/if}
@@ -365,8 +446,6 @@
   .chart-container {
     height: 80vh;
     max-width: 100%;
-    border-color: black; 
-    border-style: solid;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -378,14 +457,14 @@
   .bill {
     border: 2px solid black;
     width: 300px;
-    height: 400px;
-    padding: 20px;
-    margin: 0 10px;
+    height: 400px; /* Reduced height for compact grid */
+    padding: 14px;
+    margin: 0 8px;
     background: white;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-size: .25rem;
     position: relative;
     transition: opacity 0.8s;
     border-radius: 5px;
@@ -397,13 +476,12 @@
 
   /* Smaller bills for grid step */
   .bill.no-text {
-    width: 120px;
-    height: 160px;
-    padding: 10px;
+    width: 100px;
+    height: 140px;
+    padding: 6px;
     margin: 0;
-    font-size: 0.25rem; /* Very small font so the text structure fits in the smaller bill */
+    font-size: 0.1rem; /* Smaller font for compact grid */
     border-width: 2px;
-    overflow: hidden;
   }
 
   .bill-row {
@@ -418,28 +496,102 @@
   :global(.highlight) {
     background: #0074d9;
     color: #fff;
-    padding: 2px 4px;
-    border-radius: 3px;
-    font-weight: bold;
+    border-radius: 1.5px;
     transition: background 0.5s;
     display: inline;
     white-space: normal; /* Allow wrapping within the highlighted text */
   }
+  
+  :global(.blue-text) {
+    color: #0074d9;
+    transition: color 0.5s;
+    white-space: normal;
+  }
 
-  /* Style for step 3 where all text is invisible, only highlight backgrounds remain */
-  .text-invisible :global(.bill-content) {
-    color: transparent; /* Make regular text invisible */
+  :global(.fade-to-blue) {
+    color: black;
+    transition: color 1s cubic-bezier(0.22, 1, 0.36, 1);
+    white-space: normal;
   }
   
-  /* Make highlight text also invisible but keep the background */
-  .text-invisible :global(.highlight) {
-    color: transparent; /* Make highlight text invisible too */
+  :global(.fade-to-blue.blue) {
+    color: #0074d9;
   }
+
+  /* Style for step 3 where all text is invisible, only highlight backgrounds remain */
+  .text-invisible :global(.bill-content):not(:has(.blue-text)) {
+    color: transparent !important; /* Make regular text invisible except blue-text */
+    transition: color 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .text-invisible :global(.highlight) {
+    color: transparent !important; /* Make regular text invisible */
+    transition: color 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  :global(.fade-to-transparent) {
+    color: black;
+    transition: color 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    white-space: normal;
+  }
+
+  :global(.fade-to-transparent.transparent) {
+    color: transparent;
+  }
+  
+  /* Keep highlight background visible even when text is transparent */
+  :global(.fade-to-transparent.transparent .highlight) {
+    color: transparent; /* Hide text inside highlight */
+    background: #0074d9 !important; /* Keep background color */
+  }
+
+  /* Ensure blue-text is always visible, even in .text-invisible */
+  .text-invisible :global(.blue-text) {
+    color: #0074d9 !important;
+    transition: color 0.5s;
+  }
+
+  /* Fade in highlights in step 3 and fade out text before grid */
+  .fade-highlights-step2 :global(.highlight) {
+    opacity: 0;
+    animation: fadeHighlight 1.2s forwards;
+    animation-delay: 0.2s;
+    transition: color 1.2s cubic-bezier(0.22, 1, 0.36, 1), background 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .fade-text-step2 :global(.bill-content),
+  .fade-text-step2 :global(.highlight) {
+    transition: color 1.2s cubic-bezier(0.22, 1, 0.36, 1), background 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .fade-highlights :global(.highlight) {
+    opacity: 1;
+    transition: opacity 0.2s;
+  }
+
+  @keyframes fadeHighlight {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  /* Blue text stays visible in all steps - no transparency applied */
+  /* .text-invisible :global(.blue-text) {
+    color: transparent !important;
+  } */
   
   :global(.bill-content) {
     width: 100%;
     text-align: left;
-    line-height: 1.5;
+    line-height: 1.4;
+    max-height: 80%;
+    overflow-y: auto; /* Enable vertical scroll for overflow text only in content */
+    white-space: pre-wrap; /* Preserve line breaks and whitespace */
+    padding-top: 32px; /* Default for single/row bills */
+  }
+
+  :global(.bill-content.in-grid) {
+    padding-top: 10px !important; /* Smaller padding for grid bills */
+    font-size: .08rem !important; /* Smaller font size for grid bills */
   }
 
   .bill-grid {
@@ -466,58 +618,54 @@
   
   /* Special styling for highlights in the small bills */
   .no-text :global(.highlight) {
-    padding: 2px 2px;
-    border-radius: 2px;
+    padding: 0.5px 1px;
+    border-radius: 1px;
   }
   
   /* Special styles for the transitioning bills */
   .transitioning {
-    transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease-out;
     transform-origin: center center;
+    will-change: transform, opacity;
   }
   
   /* Styles for the transition effect */
   .from-bill-one {
-    animation: move-bill-one 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: move-bill-one 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   
   .from-bill-two {
-    animation: move-bill-two 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: move-bill-two 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   
   @keyframes move-bill-one {
     0% {
       transform: translate(calc(-50% + 160px), 0) scale(2.5);
+      opacity: 1;
+    }
+    20% {
+      opacity: 1;
     }
     100% {
       transform: translate(0, 0) scale(1);
+      opacity: 1;
     }
   }
   
   @keyframes move-bill-two {
     0% {
       transform: translate(calc(50% - 160px), 0) scale(2.5);
+      opacity: 1;
+    }
+    20% {
+      opacity: 1;
     }
     100% {
       transform: translate(0, 0) scale(1);
+      opacity: 1;
     }
   }
-  
-  .loading-indicator {
-    font-size: 1.5rem;
-    padding: 2rem;
-    color: #555;
-    text-align: center;
-  }
-  
-  .error-message {
-    color: #d9534f;
-    padding: 1rem;
-    border: 1px solid #d9534f;
-    border-radius: 4px;
-    background-color: #f9f2f2;
-  }
-  
+
   .bill-header {
     position: absolute;
     top: 0;
@@ -540,20 +688,13 @@
   }
   
   .bill-state {
-    color: #0074d9;
+    color: black;
   }
   
   .bill-number {
-    color: #111;
+    color:  #111;
   }
   
-  /* Adjust bill content to account for header */
-  .bill-content {
-    margin-top: 30px;
-  }
-  
-  .no-text .bill-content {
-    margin-top: 20px;
-  }
+  /* Bill content styling is now applied through :global selectors */
 
 </style>
