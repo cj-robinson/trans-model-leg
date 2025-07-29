@@ -10,12 +10,10 @@
 
   let width;
   let height;
+
   // Visualization-only state, controlled by step prop
   // All scroll/step logic should be handled by Scrolly.svelte
   // The following are derived from step
-  $: showSecondBill = step === 1;
-  $: showGrid = step >= 4 || step === undefined || step === null;
-  $: showAdditionalBills = step >= 4 || step === undefined || step === null;
   $: isTransitioning = step === 4;
   $: fadeToBlue = step === 2 || step >= 4;
   $: fadeToTransparent = step === 3;
@@ -26,9 +24,6 @@
   let selectedBills = []; // Initialize selectedBills array
   let loading = true;
   let error = null;
-
-
-// ...existing code...
 
   // Function to fetch and parse the CSV data
   async function loadBillsData() {
@@ -54,9 +49,6 @@
       return { success: false, error: e.message };
     }
   }
-  
-  // Initialize selectedBills once at the top level
-  // (Removed duplicate declaration)
   
   // --- N-gram extraction from original_act.txt ---
   // Dynamically load the act text from static/original_act.txt
@@ -140,11 +132,11 @@
       return `<div class=\"bill-content\"><span class=\"fade-to-blue${fadeToBlue ? ' blue' : ''}\">${text}</span></div>`;
     }
     // Special case: When on step 2 and it's the first bill, fade to blue
-    if (step === 2 && index === 0) {
+    if ((step === 2) && index === 0) {
       return `<div class=\"bill-content\"><span class=\"fade-to-blue${fadeToBlue ? ' blue' : ''}\">${text}</span></div>`;
     }
     // Special case: When on step 3 and it's the first bill, keep blue text always visible
-    if (step === 3 && index === 0) {
+    if (step >= 3 && index === 0) {
       return `<div class=\"bill-content\"><span class=\"blue-text\">${text}</span></div>`;
     }
     // Special case: When on step 3 and it's the second bill, fade only the regular text to transparent, keep highlights visible
@@ -162,12 +154,7 @@
       }
       return `<div class=\"bill-content fade-to-transparent${fadeToTransparent ? ' transparent' : ''}\">${highlightedText}</div>`;
     }
-    // Special case: When on step 4 and it's the first bill (original act), make text blue instead of highlighting
-    if (step === 4 && index === 0) {
-      return `<div class=\"bill-content\"><span class=\"blue-text\">${text}</span></div>`;
-    }
-    
-    if (step === 2 || step === 3 || step === 4) {
+    if (step >= 2) {
       if (!highlightNGrams || highlightNGrams.length === 0) return `<div class="bill-content">${text}</div>`;
       let highlightedText = text;
       // Sort n-grams by length descending to avoid nested highlights
@@ -259,15 +246,13 @@
         </div>
         {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightNGrams, step, 0)}
       </div>
-      {#if showSecondBill}
-        <div class="bill" in:fly={{ x: 500, duration: 700 }}>
-          <div class="bill-header">
-            <span class="bill-state">{getBillInfo(1).bill?.state || ''}</span>
-            <span class="bill-number">{getBillInfo(1).bill?.bill_number || ''}</span>
-          </div>
-          {@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightNGrams, step, 1)}
+      <div class="bill" in:fly={{ x: 500, duration: 700 }}>
+        <div class="bill-header">
+          <span class="bill-state">{getBillInfo(1).bill?.state || ''}</span>
+          <span class="bill-number">{getBillInfo(1).bill?.bill_number || ''}</span>
         </div>
-      {/if}
+        {@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightNGrams, step, 1)}
+      </div>
     </div>
   {:else if step === 2}
     <!-- Step 2: Two bills, highlight language -->
@@ -315,44 +300,40 @@
     </div>
   {:else if step >= 4}
     <!-- Step 4+: Grid of 10 bills, highlight, no text visible, animated in staggered -->
-    {#if showGrid}
-      <div class="bill-grid">
-        <!-- First two bills - transform from step 3 -->
-        <div
-          class="bill no-text text-invisible {isTransitioning ? 'transitioning from-bill-one' : ''}"
-        >
-          <div class="bill-header small">
-            <span class="bill-state">{getBillInfo(0).bill?.state || ''}</span>
-            <span class="bill-number">{getBillInfo(0).bill?.bill_number || ''}</span>
-          </div>
-          <div class="bill-content in-grid fade-highlights">{@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightNGrams, step, 0).replace('bill-content','bill-content in-grid')}</div>
+    <div class="bill-grid">
+      <!-- First two bills - transform from step 3 -->
+      <div
+        class="bill no-text text-invisible {isTransitioning ? 'transitioning from-bill-one' : ''}"
+      >
+        <div class="bill-header small">
+          <span class="bill-state">{getBillInfo(0).bill?.state || ''}</span>
+          <span class="bill-number">{getBillInfo(0).bill?.bill_number || ''}</span>
         </div>
-        <div
-          class="bill no-text text-invisible {isTransitioning ? 'transitioning from-bill-two' : ''}"
-        >
-          <div class="bill-header small">
-            <span class="bill-state">{getBillInfo(1).bill?.state || ''}</span>
-            <span class="bill-number">{getBillInfo(1).bill?.bill_number || ''}</span>
-          </div>
-          <div class="bill-content in-grid fade-highlights">{@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightNGrams, step, 1).replace('bill-content','bill-content in-grid')}</div>
-        </div>
-        <!-- Remaining bills: fade in after the first two have moved -->
-        {#if showAdditionalBills}
-          {#each Array(8) as _, i}
-            <div 
-              class="bill no-text text-invisible bill-fade-in"
-              style="animation-delay: {100 + i * 60}ms;"
-            >
-              <div class="bill-header small">
-                <span class="bill-state">{getBillInfo(i + 2).bill?.state || ''}</span>
-                <span class="bill-number">{getBillInfo(i + 2).bill?.bill_number || ''}</span>
-              </div>
-              <div class="bill-content in-grid fade-highlights">{@html getHighlighted(getBillInfo(i + 2).billText, getBillInfo(i + 2).highlightNGrams, step, i + 2).replace('bill-content','bill-content in-grid')}</div>
-            </div>
-          {/each}
-        {/if}
+        <div class="bill-content in-grid fade-highlights">{@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightNGrams, step, 0).replace('bill-content','bill-content in-grid')}</div>
       </div>
-    {/if}
+      <div
+        class="bill no-text text-invisible {isTransitioning ? 'transitioning from-bill-two' : ''}"
+      >
+        <div class="bill-header small">
+          <span class="bill-state">{getBillInfo(1).bill?.state || ''}</span>
+          <span class="bill-number">{getBillInfo(1).bill?.bill_number || ''}</span>
+        </div>
+        <div class="bill-content in-grid fade-highlights">{@html getHighlighted(getBillInfo(1).billText, getBillInfo(1).highlightNGrams, step, 1).replace('bill-content','bill-content in-grid')}</div>
+      </div>
+      <!-- Remaining bills: fade in after the first two have moved -->
+      {#each Array(18) as _, i}
+        <div 
+          class="bill no-text text-invisible bill-fade-in"
+          style="animation-delay: {100 + i * 60}ms;"
+        >
+          <div class="bill-header small">
+            <span class="bill-state">{getBillInfo(i + 2).bill?.state || ''}</span>
+            <span class="bill-number">{getBillInfo(i + 2).bill?.bill_number || ''}</span>
+          </div>
+          <div class="bill-content in-grid fade-highlights">{@html getHighlighted(getBillInfo(i + 2).billText, getBillInfo(i + 2).highlightNGrams, step, i + 2).replace('bill-content','bill-content in-grid')}</div>
+        </div>
+      {/each}
+    </div>
   {/if}
 </div>
 
@@ -392,8 +373,8 @@
   /* Smaller bills for grid step */
   .bill.no-text {
     width: 100px;
-    height: 140px;
-    padding: 6px;
+    height: 120px;
+    padding: 2px;
     margin: 0;
     font-size: 0.1rem; /* Smaller font for compact grid */
     border-width: 2px;
