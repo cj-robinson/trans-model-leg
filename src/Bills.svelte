@@ -230,20 +230,12 @@
   {#if step === 0}
     <!-- Step 0: One bill with text, fade to blue -->
     <div class="bill" in:fade={{ duration: 1000, delay: 200 }}>
-      <div class="bill-header">
-        <span class="bill-state">{getBillInfo(0).bill?.state || ''}</span>
-        <span class="bill-number">{getBillInfo(0).bill?.bill_number || ''}</span>
-      </div>
       {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightNGrams, step, 0, fadeToBlue)}
     </div>
   {:else if step === 1}
     <!-- Step 1: Two bills side by side, second bill flies in from right after delay -->
     <div class="bill-row">
       <div class="bill">
-        <div class="bill-header">
-          <span class="bill-state">{getBillInfo(0).bill?.state || ''}</span>
-          <span class="bill-number">{getBillInfo(0).bill?.bill_number || ''}</span>
-        </div>
         {@html getHighlighted(getBillInfo(0).billText, getBillInfo(0).highlightNGrams, step, 0)}
       </div>
       <div class="bill" in:fly={{ x: 500, duration: 700 }}>
@@ -404,7 +396,7 @@
     white-space: normal;
   }
 
-  :global(.fade-to-blue) {
+  :global(.bill-text) {
     color: black;
     transition: color 1s cubic-bezier(0.22, 1, 0.36, 1);
     white-space: normal;
