@@ -2,18 +2,15 @@
   import Scrolly from "../Scrolly.svelte";
   import BillColdOpen from "./_components/BillColdOpen.svelte";
   import ACLUChart from "./_components/ACLUChart.svelte";
+
   import doc from "./_data/doc.json";
+
   import { onMount } from "svelte";
 
   let value;
-  const steps = [
-    "<p>This is Idaho's H.B 500, which Rep. Ehardt admitted was largely authored by the Alliance to Defend Freedom.</p>",
-    "<p>Here's another bill introduced in Montana the year after Idaho's bill was introduced.</p>",
-    "<p>The two bills are titled the same and are markedly similar. <span style='background:green; color: white; border-radius: 2px;'>Green text</span> indicates phrases repeated directly from the Idaho bill. </p>",
-    "<p>A large portion of the bill was copied directly from the original legislation. Here, gray highlights represent new language and green represents copied phrases.</p>",
-    "<p>Bills across the country mirror this model legislation. </p>",
-    "<p>Bills across the country mirror this model legislation. </p>",
-  ];
+  // Extract steps from the first object in the coldopen array
+  const steps = doc.coldopen && doc.coldopen[0] ? 
+    Object.values(doc.coldopen[0]) : [];
 </script>
 
 <section>
