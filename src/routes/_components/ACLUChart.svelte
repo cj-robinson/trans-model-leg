@@ -1,0 +1,1 @@
+<div style="min-height:411px" id="datawrapper-vis-JLsB4"><script type="text/javascript" defer src="https://datawrapper.dwcdn.net/JLsB4/embed.js" charset="utf-8" data-target="#datawrapper-vis-JLsB4"></script><noscript><img src="https://datawrapper.dwcdn.net/JLsB4/full.png" alt="Anti-LGBTQ Legislation in the United States (Column Chart)" /></noscript></div>
