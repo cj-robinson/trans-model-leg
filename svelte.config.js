@@ -10,7 +10,7 @@ const config = {
             strict: false
         }),
         paths: {
-            base: '/trans-model-leg', // Ensure this matches your repository name
+            base: '/trans-model-leg', 
         }
     }
 };
