@@ -21,11 +21,13 @@ h1.header {
   font-family: "Courier New", Courier, monospace !important;
   font-weight: 200;
   text-align: center;
-  line-height: 0.5;
+  line-height: 1;
+  font-size: .75em;
   opacity: 1 !important;
 }
 
 .leg-desc {
+  font-size: .5em;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -33,6 +35,7 @@ h1.header {
 }
 
 .line {
+   font-size: .5em; 
   display: flex;
   align-items: baseline;
 }
@@ -50,6 +53,12 @@ h1.header {
 }
 .bill-box {
   display: flex-grid;
+  max-width: 700px;
+   margin: auto;
+}
+
+.bill-row {
+  position: flex;
 }
 
 .small-bill {
@@ -74,10 +83,14 @@ h1.header {
   background: white;
   display: inline-block;
   text-align: left;
-  overflow-y: hidden;
   word-wrap: break-word;
+  overflow-y: hidden;
   hyphens: auto;
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+}
+
+.bill.scroll-bill {
+  overflow-y: scroll;
 }
 
 .bill-content, .small-bill-content {
@@ -92,15 +105,16 @@ h1.header {
   padding-bottom: 0;
 }
 
-.bill-content {
+.bill-content p, .original-bill p{
   font-size: 0.5rem;
   margin: 0;
   padding: 0;
-}
-.small-bill-content {
-  font-size: 0.1rem;
+  line-height: 1;
 }
 
+.small-bill-content {
+  font-size: 0.12rem;
+}
 
 .small-bill-content-header {
   font-size: 0.5rem !important;

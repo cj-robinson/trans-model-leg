@@ -15,7 +15,7 @@
   
   // Bill objects for display, each with an id and html
   let originalBill = { id: "original", html: ""};
-  let montanaBill = { id: "montana-viz", html: ""};
+  let montanaBill = { id: "montana", html: ""};
 
   let change_text_step = 3;
   let intro_montana_step = 2;
@@ -67,7 +67,6 @@
     }    
     introBills = newBills;
     smallBills = newSmallBills[0];
-    console.log(smallBills);
   }
 
   afterUpdate(() => {
@@ -84,15 +83,6 @@
       .delay((d, i) => i * 100)
       .duration(100)
       .style("color", step >= change_text_step ? "green" : "transparent");
-
-    // make original bill smaller
-    // d3.selectAll(".original-bill")
-    //   .transition()
-    //   .duration(200)
-    //   .ease(d3.easeCubicInOut)  // Add easing function
-
-    //   .style("height", step >= add_small_bills_step ? '200px' : '400px')
-
   });
 
   let width;
@@ -124,7 +114,6 @@
         <div class="bill-content" class:montana-bill={bill.id === "montana"}>
           {@html bill.html}
         </div>
-        <div class='torn-edge'></div>
       </div>
     {/each}
   </div>
@@ -145,16 +134,13 @@
 </div>
 
 <style>
+
   :global(.montana-bill p) {
     color: gray;
   }
 
   :global(.montana-bill [class^="ngram-text-fade-in-"]) {
     color: transparent;
-  }
-
-  .bill-row {
-    position: flex;
   }
 
   @keyframes fadeHighlight {

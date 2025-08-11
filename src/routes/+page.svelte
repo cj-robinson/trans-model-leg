@@ -2,27 +2,63 @@
   import Scrolly from "./_components/Scrolly.svelte";
   import BillColdOpen from "./_components/BillColdOpen.svelte";
   import ACLUChart from "./_components/ACLUChart.svelte";
+  import SAFEActTextChange from "./_components/SAFEActTextChange.svelte";
+
   import Map from "./_components/Map.svelte";
 
   import doc from "./_data/doc.json";
 
-  import '../app.css';
+  import "../app.css";
 
   import { onMount } from "svelte";
 
-  let value;
+  let value1; // For the first Scrolly
+  let value2; // For the second Scrolly
+
   // Extract steps from the first object in the coldopen array
-  const steps = doc.coldopen && doc.coldopen[0] ? 
-    Object.values(doc.coldopen[0]) : [];
-    
+  const steps = Object.values(doc.coldopen[0]);
+
+  // Extract steps from the first object in the safesteps array
+  const safe_steps = Object.values(doc.safegraphic[0]);
 </script>
 
 <section>
   <div class="section-container">
     <div class="steps-container">
-      <Scrolly bind:value>
+      <Scrolly bind:value={value1}>
         {#each steps as text, i}
-          <div class="step" class:active={value === i}>
+          <div class="step" class:active={value1 === i}>
+            <div class="step-content">{@html text}</div>
+          </div>
+        {/each}
+      </Scrolly>
+    </div>
+    <div class="sticky">
+      <BillColdOpen step={value1} />
+    </div>
+  </div>
+
+  <div class="body-text">
+    <div class="hero">
+      <h1>{@html doc.headline}</h1>
+      <h2>{@html doc.leadin}</h2>
+      <h3>By C.J. Robinson</h3>
+      <br />
+    </div>
+    <div>{@html doc.intro}</div>
+      <ACLUChart />
+    <br />      
+    <div>{@html doc.intro2}</div>
+    <div>{@html doc.intro3}</div>
+    <div>{@html doc.intro4}</div>
+    <h3>{@html doc.safesubtitle}</h3>
+    <div>{@html doc.safeactintro}</div>
+  </div>
+  <div class="section-container">
+    <div class="steps-container">
+      <Scrolly bind:value={value2}>
+        {#each safe_steps as text, i}
+          <div class="step" class:active={value2 === i}>
             <div class="step-content">{@html text}</div>
           </div>
         {/each}
@@ -30,37 +66,22 @@
       </Scrolly>
     </div>
     <div class="sticky">
-      <BillColdOpen step={value} />
+      <SAFEActTextChange step={value2} />
     </div>
   </div>
-
-
   <div class="body-text">
-    <div class="hero">
-      <h1>{@html doc.headline}</h1>
-      <h2>{@html doc.leadin}</h2>
-      <h3>By C.J. Robinson</h3>
-      <br/>
-    </div>    
-    <div>{@html doc.intro}</div>
-    <div>{@html doc.intro2}</div>
-        <ACLUChart />
-    <br />
-    <div>{@html doc.intro3}</div>
-    <br />
-    <Map/>
-       <br />
-    <div>{@html doc.intro4}</div>
-    <h3>{@html doc.safesubtitle}</h3>
-    <div>{@html doc.safeactintro}</div>
     <div>{@html doc.safeact2}</div>
     <h3>{@html doc.fiwsasubtitle}</h3>
     <p>{@html doc.fiwsa}</p>
     <h3>{@html doc.kicker}</h3>
-    <p>{@html doc.rep}</p>
+    <p>{@html doc.rep1}</p>
+
+       <br />
+    <Map />
+    <br /> 
+    <p>{@html doc.rep2}</p>
   </div>
-  <div class="hero">
-  </div>
+  <div class="hero"></div>
 </section>
 
 <style>
@@ -77,11 +98,9 @@
     font-size: 1.2em;
   }
 
-
-
   .hero {
     height: 60vh;
-    display: flex;
+     display: flex;
     font-family: "Libre Franklin", sans-serif;
 
     place-items: center;
@@ -111,8 +130,8 @@
     text-align: center;
     transition: background 100ms;
     display: flex;
+    background-color: #f0f0f0; /* Light gray */
   }
-
 
   .step-content {
     font-size: 1rem;
@@ -142,23 +161,22 @@
   }
 
   .steps-container {
-      transform: translate3d(0,0,0);
-      position: relative;
-      padding: 0;
-      z-index: 10;
-      max-width: 35rem;
-      margin: 0 auto;
-      padding-bottom: 4em;
+    transform: translate3d(0, 0, 0);
+    position: relative;
+    padding: 0;
+    z-index: 10;
+    max-width: 35rem;
+    margin: 0 auto;
+    padding-bottom: 4em;
   }
 
   .step {
-      color: black;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 90svh;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 90svh;
   }
-
 
   .step > * {
     width: 700px;
@@ -166,7 +184,7 @@
     margin-right: 1.3em;
     text-align: center;
     padding: 1.2em !important;
-}
+  }
 
   .section-container {
     flex-direction: column-reverse;
