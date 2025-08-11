@@ -6,11 +6,11 @@ const config = {
         adapter: adapter({
             pages: 'docs',
             assets: 'docs',
-            fallback: null,
-			strict: false
+            fallback: "index.html",
+            strict: false
         }),
         paths: {
-            base: process.env.NODE_ENV === 'production' ? '/trans-model-leg' : '', 
+            base: '/trans-model-leg', // Ensure this matches your repository name
         }
     }
 };
