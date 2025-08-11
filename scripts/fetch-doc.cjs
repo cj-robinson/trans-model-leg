@@ -174,24 +174,28 @@ function fetchAndSaveDoc() {
             return match.replace(/”|“/g, '"').replace(/‘|’/g, "'");
           });
           var parsed = archieml.load(parsedText);
-          // Recursively replace \n with <br> in all string values
-          function replaceNewlines(obj) {
+          // Recursively wrap paragraphs (split by double newlines) in <p> tags in all string values
+          function wrapParagraphs(obj) {
             if (typeof obj === 'string') {
-              return obj.replace(/\n/g, '<br>');
+              // Split by two or more newlines, trim, and wrap each paragraph
+              return obj
+                .split(/\n{2,}/)
+                .map(p => `<p>${p.replace(/\n/g, ' ').trim()}</p>`)
+                .join('');
             } else if (Array.isArray(obj)) {
-              return obj.map(replaceNewlines);
+              return obj.map(wrapParagraphs);
             } else if (obj && typeof obj === 'object') {
               const out = {};
-              for (const k in obj) out[k] = replaceNewlines(obj[k]);
+              for (const k in obj) out[k] = wrapParagraphs(obj[k]);
               return out;
             } else {
               return obj;
             }
           }
-          const parsedWithBr = replaceNewlines(parsed);
-          // Save to src/routes/_data/doc.json with <br> for newlines
-          fs.writeFileSync('src/routes/_data/doc.json', JSON.stringify(parsedWithBr, null, 2));
-          console.log('Document parsed and saved to src/routes/_data/doc.json (with <br> for newlines)');
+          const parsedWithPTags = wrapParagraphs(parsed);
+          // Save to src/routes/_data/doc.json with <p> tags for paragraphs
+          fs.writeFileSync('src/routes/_data/doc.json', JSON.stringify(parsedWithPTags, null, 2));
+          console.log('Document parsed and saved to src/routes/_data/doc.json (with <p> tags for paragraphs)');
         });
         var parser = new htmlparser.Parser(handler);
         parser.write(data);
