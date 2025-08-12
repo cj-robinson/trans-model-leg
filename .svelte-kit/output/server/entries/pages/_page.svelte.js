@@ -1,0 +1,285 @@
+import { a as push, f as fallback, s as slot, b as bind_props, p as pop, c as ensure_array_like, d as attr_class, h as attr_style, e as escape_html, i as attr, j as copy_payload, k as assign_payload } from "../../chunks/index.js";
+import "d3";
+import "papaparse";
+import "clsx";
+import { a as assets } from "../../chunks/paths.js";
+function html(value) {
+  var html2 = String(value ?? "");
+  var open = "<!---->";
+  return open + html2 + "<!---->";
+}
+function Scrolly($$payload, $$props) {
+  push();
+  let root = fallback($$props["root"], null);
+  let top = fallback($$props["top"], 0);
+  let bottom = fallback($$props["bottom"], 0);
+  let increments = fallback($$props["increments"], 100);
+  let value = fallback($$props["value"], void 0);
+  const steps = [];
+  const threshold = [];
+  let nodes = [];
+  let intersectionObservers = [];
+  const update = () => {
+    if (!nodes.length) return;
+    nodes.forEach(createObserver);
+  };
+  const mostInView = () => {
+    let maxRatio = 0;
+    let maxIndex = 0;
+    for (let i = 0; i < steps.length; i++) {
+      if (steps[i] > maxRatio) {
+        maxRatio = steps[i];
+        maxIndex = i;
+      }
+    }
+    if (maxRatio > 0) value = maxIndex;
+    else value = void 0;
+  };
+  const createObserver = (node, index) => {
+    const handleIntersect = (e) => {
+      e[0].isIntersecting;
+      const ratio = e[0].intersectionRatio;
+      steps[index] = ratio;
+      mostInView();
+    };
+    const marginTop = top ? top * -1 : 0;
+    const marginBottom = bottom ? bottom * -1 : 0;
+    const rootMargin = `${marginTop}px 0px ${marginBottom}px 0px`;
+    const options = { root, rootMargin, threshold };
+    if (intersectionObservers[index]) intersectionObservers[index].disconnect();
+    const io = new IntersectionObserver(handleIntersect, options);
+    io.observe(node);
+    intersectionObservers[index] = io;
+  };
+  update();
+  $$payload.out += `<div><!---->`;
+  slot($$payload, $$props, "default", {});
+  $$payload.out += `<!----></div>`;
+  bind_props($$props, { root, top, bottom, increments, value });
+  pop();
+}
+function BillColdOpen($$payload, $$props) {
+  push();
+  let step = $$props["step"];
+  let billsData = [];
+  let originalBill = { id: "original", html: "" };
+  let montanaBill = { id: "montana", html: "" };
+  let intro_montana_step = 2;
+  let add_small_bills_step = 5;
+  let introBills = [originalBill];
+  let smallBills = [];
+  {
+    let newBills = [];
+    let newSmallBills = [];
+    if (step >= 0) {
+      newBills.push(originalBill);
+    }
+    if (step >= intro_montana_step && step < add_small_bills_step) {
+      newBills.push(montanaBill);
+    }
+    if (step >= add_small_bills_step) {
+      newSmallBills.push(billsData);
+    }
+    introBills = newBills;
+    smallBills = newSmallBills[0];
+  }
+  const each_array = ensure_array_like(
+    // Fade out: select all fade-out spans, cascade by index
+    // Fade in: select all fade-in spans, cascade by index
+    introBills
+  );
+  const each_array_1 = ensure_array_like(smallBills);
+  $$payload.out += `<div class="chart-container svelte-1pwd9z7"><div class="bill-row svelte-1pwd9z7"><!--[-->`;
+  for (let index = 0, $$length = each_array.length; index < $$length; index++) {
+    let bill = each_array[index];
+    $$payload.out += `<div${attr_class("bill svelte-1pwd9z7", void 0, { "original-bill": bill.id === "original" })}${attr_style("", {
+      height: step >= add_small_bills_step ? "200px" : "400px",
+      transition: "height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"
+    })}><div${attr_class("bill-content svelte-1pwd9z7", void 0, { "montana-bill": bill.id === "montana" })}>${html(bill.html)}</div></div>`;
+  }
+  $$payload.out += `<!--]--></div> <div class="bill-box svelte-1pwd9z7"><!--[-->`;
+  for (let index = 0, $$length = each_array_1.length; index < $$length; index++) {
+    let bill = each_array_1[index];
+    $$payload.out += `<div class="small-bill svelte-1pwd9z7"><div class="small-bill-content-header svelte-1pwd9z7">${escape_html(bill.state)} - ${escape_html(bill.year_start)}</div> <div class="small-bill-content svelte-1pwd9z7">${escape_html(bill.text)}</div></div>`;
+  }
+  $$payload.out += `<!--]--></div></div>`;
+  bind_props($$props, { step });
+  pop();
+}
+function ACLUChart($$payload) {
+  $$payload.out += `<div style="min-height:411px" id="datawrapper-vis-JLsB4"><script type="text/javascript" defer src="https://datawrapper.dwcdn.net/JLsB4/embed.js" charset="utf-8" data-target="#datawrapper-vis-JLsB4"><\/script><noscript><img src="https://datawrapper.dwcdn.net/JLsB4/full.png" alt="Anti-LGBTQ Legislation in the United States (Column Chart)"/></noscript></div>`;
+}
+function SAFEActTextChange($$payload, $$props) {
+  push();
+  let step = $$props["step"];
+  let akBill = { id: "", html: "" };
+  let miBill = { id: "", html: "" };
+  let scBill = { id: "", html: "" };
+  let mi_bill_step = 1;
+  let scroll_step = 2;
+  let sc_bill_step = 4;
+  let sc_scroll_bill_step = 5;
+  let scrollBillNodes = [];
+  const scrollTo = (node, top) => {
+    const scroll = () => node.scroll({ top, behavior: "smooth" });
+    scroll();
+    return { update: scroll };
+  };
+  let introBills = [akBill];
+  {
+    let newBills = [];
+    if (step >= 0 || step === void 0) {
+      newBills.push(akBill);
+    }
+    if (step >= mi_bill_step && step < sc_bill_step) {
+      newBills.push(miBill);
+    }
+    if (step === scroll_step) {
+      scrollTo(scrollBillNodes[0], 3750);
+      scrollTo(scrollBillNodes[1], 1880);
+    }
+    if (step === scroll_step - 1) {
+      scrollTo(scrollBillNodes[0], 0);
+    }
+    if (step >= sc_bill_step) {
+      newBills.push(scBill);
+    }
+    if (step === sc_scroll_bill_step) {
+      scrollTo(scrollBillNodes[0], 3750);
+      scrollTo(scrollBillNodes[1], 1880);
+    }
+    if (step === sc_scroll_bill_step - 1) {
+      scrollTo(scrollBillNodes[0], 0);
+      scrollTo(scrollBillNodes[1], 0);
+    }
+    introBills = [...newBills];
+    console.log(introBills);
+  }
+  const each_array = ensure_array_like(
+    // Fade out: select all fade-out spans, cascade by index
+    // Fade out: select all fade-out spans, cascade by index
+    introBills
+  );
+  $$payload.out += `<div class="chart-container"><!--[-->`;
+  for (let index = 0, $$length = each_array.length; index < $$length; index++) {
+    let bill = each_array[index];
+    $$payload.out += `<div class="bill scroll-bill"><div>`;
+    if (bill.id == "ak") {
+      $$payload.out += "<!--[-->";
+      $$payload.out += `<p>Original Bill</p>`;
+    } else {
+      $$payload.out += "<!--[!-->";
+    }
+    $$payload.out += `<!--]--></div> <div class="bill-content">${html(bill.html)}</div></div>`;
+  }
+  $$payload.out += `<!--]--></div>`;
+  bind_props($$props, { step });
+  pop();
+}
+function Map($$payload, $$props) {
+  push();
+  $$payload.out += `<div id="g-trans_map-box" class="ai2html ai2html-responsive svelte-trylpz"><div class="graphic-title">Model Legislation is Introduced Around the Country, Often by Less Well-Resourced Legislatures</div> <div class="graphic-sub">Legislation introduced in the United States utilizing language found in model bills</div> <div id="g-trans_map-full" class="g-artboard svelte-trylpz" style="width:700px; height:255px;" data-aspect-ratio="2.745" data-min-width="700"><div style=""></div> <img id="g-trans_map-full-img" class="g-trans_map-full-img g-aiImg svelte-trylpz" alt=""${attr("src", `${assets}/ai2html-output/trans_map-full.png`)}/> <div id="g-ai0-1" class="g-Layer_1 g-aiAbs g-aiPointText svelte-trylpz" style="top:9.2934%;margin-top:-17.7px;left:3.676%;width:252px;"><p class="g-pstyle0 svelte-trylpz">“Fairness in Women’s Sports Act”</p></div> <div id="g-ai0-2" class="g-Layer_1 g-aiAbs g-aiPointText svelte-trylpz" style="top:9.2934%;margin-top:-17.7px;left:53.6%;width:335px;"><p class="g-pstyle0 svelte-trylpz">“Save Adolecents From Experimentation Act”</p></div></div> <div id="g-trans_map-mobile" class="g-artboard svelte-trylpz" style="max-width: 375px;max-height: 523px" data-aspect-ratio="0.717" data-min-width="0" data-max-width="699"><div style="padding: 0 0 139.4133% 0;"></div> <img id="g-trans_map-mobile-img" class="g-trans_map-mobile-img g-aiImg svelte-trylpz" alt=""${attr("src", `${assets}/ai2html-output/trans_map-mobile.png`)}/> <div id="g-ai1-1" class="g-Layer_1 g-aiAbs g-aiPointText svelte-trylpz" style="top:5.1068%;margin-top:-17.7px;left:8.5292%;width:252px;"><p class="g-pstyle0 svelte-trylpz">“Fairness in Women’s Sports Act”</p></div> <div id="g-ai1-2" class="g-ai2html-settings g-aiAbs g-aiPointText svelte-trylpz" style="top:54.839%;margin-top:-17.7px;left:8.5292%;width:335px;"><p class="g-pstyle0 svelte-trylpz">“Save Adolecents From Experimentation Act”</p></div></div></div>`;
+  pop();
+}
+const coldopen = [{ "step1": "<p>Idaho’s House Bill 500 was, in some ways, completely unremarkable.</p>", "step2": "<p>The “Fairness in Women’s Sports Act” was the latest in a series of efforts to define and ban biological men from competing in sports throughout the state.</p>", "step3": "<p>Montana’s House Bill 112 was introduced the next year.</p>", "step4": "<p>The two bills are markedly similar. <span style='background:green; color: white; border-radius: 2px;'>Green text</span> indicates phrases repeated directly from the Idaho bill</p>", "step5": "<p>Constituents may think bills written by local legislators are written specifically for them. Nationalized political issues like transgender rights, however, are often copied directly from think tanks or other states.</p>", "step6": "<p>Bills across the country mirror this model legislation.</p>" }];
+const headline = "<p>The Legislative Network Behind State Trans Laws</p>";
+const leadin = "<p>A new data-driven analysis reveals how state transgender policies utilize language sourced from lobbying groups and disseminated throughout state legislator networks.</p>";
+const intro = `<p>An imminent Supreme Court decision stands to dictate whether the state can legally enforce H.B. 500. The court's ruling may determine enforcement in Florida, Montana, Arizona and six other states whose laws draw on identical language.</p><p>How the law was written is no mystery. Representative Barbara Ehardt, who introduced the bill, didn't author it. Instead, Ehardt reached out to the Alliance Defending Freedom (ADF), a prominent right-wing legal organization, for assistance.</p><p>“I couldn’t get the language correct,” Representative Barbara Ehardt told <a href="https://news.bloomberglaw.com/us-law-week/transgender-athlete-fight-to-heat-up-as-legislatures-return">Bloomberg Law</a>. The ADF, which the Southern Poverty Law Center designates as a hate group, provided the framework.</p><p>Constituents may expect their legislators to craft custom local-level laws, but political offices often use language sourced from think tanks or other states as the basis for introduced bills. The phenomenon is commonly referred to as model or ‘copy and paste’ legislation.</p><p>By analyzing more than 11,000 bills — using terms like ‘gender’ or ‘biological sex’ — dozens of documents were revealed as borrowing heavily from one another. Tracing them to their source finds a direct connection to model legislation promoted by advocacy groups like the ADF.</p><p>The most common type of model legislation involves bans on transgender sports participation and transgender medical care for minors. Across both types, 63 bills originate from ‘copy and paste’ legislation in 24 states. More than 46 mirror the Save Adolescents from Experimentation (SAFE) Act, aimed at banning medical care for minors, pushed by a right-wing research group.</p><p>Some legislators, like Shane Jett from Oklahoma, have introduced copied bills targeting trans youth across both sports participation and medical care.</p><p>Progressive groups, including gay rights organizations such as the <a href="https://www.nclrights.org/wp-content/uploads/2015/10/SampleAntiConversionTherapyBill_2016-1.pdf">Human Rights Campaign</a>, also employ this technique to advance their legislative agendas. <a href="https://nationalpress.org/topic/model-bill-copycat-legislation-center-for-public-integrity-tracker/">A previous analysis</a> found that the left has been much less effective than the right in utilizing model legislation.</p><p>By August 2025, <a href="https://www.aclu.org/legislative-attacks-on-lgbtq-rights-2025">the ACLU had tracked</a> nearly 600 anti-LGBTQ bills nationwide. That number is up from 533 and 510 in 2024 and 2023, respectively, with three months left in the year.</p>`;
+const intro2 = `<p>“This isn’t just about medical care or sports,” said Logan Casey, director of policy research for the Movement Advancement Project, a LGBTQ-related think tank. “They’re all being used as a foot in the door to a much broader and more radical agenda.”</p><p>In some ways, model legislation is a feature of American politics, according to Jami Taylor, Professor of Political Science at the University of Toledo.</p><p>“Federalism gave transgender people and their allies some opportunities to get wins,” Taylor said, citing civil protection wins at the state and national levels until 2016.</p><p>Legislating issues at a state or city level is now allowing opponents to limit trans rights, Taylor said.</p><p>After a brief increase in so-called “bathroom bills” during 2016 and 2017, and with the Trump administration in power at the federal level, state legislation became less popular, Casey said.</p><p>With Donald Trump's 2024 campaign push on anti-trans rhetoric and his presidential win, the Republican Party as a whole has dedicated a large amount of resources and attention to the issue.</p><p>Most bills included in this analysis never progress beyond introduction or die in committee. Our analysis found that legislatures did not pass 93% of transgender sports ban bills and 90% of bans on minor medical care. That's consistent with research from the Movement Advancement Project, which found 92% of all anti-trans bills become laws at the state level.</p><p>Even if they are unsuccessful, researchers argue that this kind of legislation impacts how states function politically. Andrew Karsh, a political science professor at the University of Minnesota, said these bills still take time away from committees and amendments. The legislation ultimately amounts to less time for more localized policy.</p><p>“It speaks to the fact that there's an increasing nationalization of the agenda,” said Karsh.</p><p>Methods to uncover model legislation have become more common with the rise of advanced textual analysis and large language models. Previous reporting from USA Today in their <a href="https://www.usatoday.com/in-depth/news/investigations/2019/04/03/abortion-gun-laws-stand-your-ground-model-bills-conservatives-liberal-corporate-influence-lobbyists/3162173002/">Copy, Paste, Legislate</a> project examined the scope of model legislation in aggregate.</p>`;
+const intro4 = '<p>The patchwork of differing state policies also leaves transgender people, particularly youth, especially vulnerable, Casey said. Research comparing states with these policies to others shows they <a href="https://www.mdpi.com/1660-4601/19/17/10641">negatively impact transgender youth’s mental health</a> and <a href="https://link.springer.com/article/10.1007/s00127-023-02482-4">increase psychological distress and thoughts of suicide</a>. Studies also show the outsized effect of legislation on <a href="https://williamsinstitute.law.ucla.edu/publications/transgender-moving-desire/">transgender people’s plans to </a><a href="https://williamsinstitute.law.ucla.edu/publications/transgender-moving-desire/">travel or desires</a><a href="https://williamsinstitute.law.ucla.edu/publications/transgender-moving-desire/"> to move.</a></p><p>The Williams Institute at the University of California, Los Angeles, estimates that over <a href="http://williamsinstitute.law.ucla.edu/publications/2024-anti-trans-legislation/">100,000 youth live in states that are pending bans on transgender healthcare for minors or restricting access to sports</a>.</p><p>With the Supreme Court considering Idaho’s Fairness in Women’s Sports Act in Little v. Hecox and having recently ruled on a similar transgender medical care ban in Tennessee, the consequences for this vast network of laws – and the minors affected by them – are at stake</p>';
+const safesubtitle = "<p>SAFE Act</p>";
+const safeactintro = "<p>The Save Adolescents from Experimentation (SAFE) Act aims to block medical care for transgender teens, such as puberty blockers and hormone treatments. The Family Research Council (FRC), a right-wing research and advocacy group, claims the model legislation as its own.</p>";
+const safegraphic = [{ "step1": '<p>Arkansas, which first passed its 2021 SAFE Act after being introduced in 2021, was “largely based on FRC’s model legislation,” according to the Family Research Council’s website. The Family Research Council was recently recognized as a church by the Internal Revenue Service, <a href="https://www.propublica.org/article/family-research-council-irs-church-status">as reported by ProPublica in 2022.</a></p>', "step2": '<p>Evidence of the bill’s evolution is clear across multiple areas. Missouri passed <a href="https://legiscan.com/MO/text/SB598/2023">similar legislation</a> in 2023.</p>', "step3": "<p>It retained much of the same language.</p>", "step5": '<p>The strategy of using civil suits by private individuals is strikingly similar to abortion bans passed by legislatures like <a href="https://legiscan.com/TX/text/SB8/id/2395961">Texas’s Senate Bill 8 in 2021</a>.</p>', "step6": '<p>In 2024, three years after the original Arkansas bill passed, <a href="https://legiscan.com/SC/text/H4619/2023">South Carolina introduced a copy of the bill</a>.</p>', "step7": "<p>This iteration added a section that adds anyone who ‘aids or abets’ people who violate the law.</p>", "step8": "<p>Nearly 18 other states introduced legislation pulling from the Family Research Council’s language, based on the textual analysis. The analysis found similarly worded bills introduced in states including North Dakota, New Mexico and Pennsylvania.</p>" }];
+const safeact2 = '<p>Tying bills back to their origins can become difficult as legislators change and amend model legislation, according to Don Haider-Markel, a professor studying public opinion and transgender rights at the University of Kansas.</p><p>Tennessee passed a comparable law banning gender transition treatments for minors not based on the SAFE Act. That law emphasizes the creation of a “private right of action,” allowing parents or guardians to sue healthcare providers, a similar method of empowering citizens rather than the government to enforce the law.</p><p>The organization posts regular updates regarding the reach of the SAFE Act across America’s legislatures, including its<a href="https://www.frc.org/statelegislativeroundup/2022-state-legislative-sessions-an-overview-on-protecting-minors-from-gender-transition#gsc.tab=0"> legislative roundup</a>, which details how the SAFE Act is “a model bill that includes all the above provisions, making it the gold standard of protection for minors.”</p><p>When the Supreme Court recently upheld Tennessee’s law in United States v. Skrmetti, it dealt a blow to transgender rights across the country, by limiting access to healthcare.</p><p>Even so, <a href="https://arkansasadvocate.com/2025/06/27/appeals-court-orders-new-filings-in-arkansas-transgender-care-case-due-to-scotus-ruling/">state courts have ruled</a> that the Supreme Court’s decision does not directly apply to model legislation that heavily draws from the SAFE Act, like those in our analysis.</p><p>Differences between the two include that the SAFE Act contains a wrongful death clause not found in Tennessee’s law, and does not allow for suits to be brought against the parents of minors undergoing treatment. Those differences could insulate SAFE Act-inspired bills from some of the legal challenges pending against Tennessee’s version.</p><p>In January of 2025, <a href="https://www.whitehouse.gov/presidential-actions/2025/01/protecting-children-from-chemical-and-surgical-mutilation/">President Trump released</a> an executive order titled “Protecting Children From Chemical And Surgical Mutilation.” The act states the United States will not “fund, sponsor, promote, assist, or support the so-called ‘transition’ of a child from one sex to another,” and vows to enforce state bans on procedures. A federal court issued a temporary restraining order in February.</p><p>The Trump administration is attempting to force a national ban in other ways, including <a href="https://www.npr.org/sections/shots-health-news/2025/08/01/nx-s1-5490427/bonta-trump-bondi-transgender-minors-hospital">using the Attorney General to enforce </a>laws banning female genital mutilation. <a href="https://x.com/FBI/status/1929587710894739567">The FBI posted on X</a>, asking the public to report any hospitals or doctors who may violate the action.</p><p>Outright bans on gender-affirming care for minors are dangerous for transgender youth, <a href="https://www.scientificamerican.com/article/new-arkansas-law-and-similar-bills-endanger-transgender-youth-research-shows/">research shows</a>.</p>';
+const fiwsasubtitle = "<p>Fairness in Women’s Sports Act</p>";
+const fiwsa = '<p>In press briefings or news articles, representatives in <a href="https://www.flgov.com/eog/news/press/2021/governor-ron-desantis-signs-fairness-womens-sports-act">three</a> <a href="https://www.counton2.com/news/lowcountry-lawmakers-discuss-save-womens-sports-act-as-it-goes-to-sc-senate/">different</a> <a href="https://www.theepochtimes.com/world/bc-conservatives-bill-for-women-only-sports-defeated-by-governing-ndp-5640623">states</a> said the same thing about bills they sponsored – it protected “opportunities for female athletes to demonstrate their strength, skills, and athletic abilities.”</p><p>All the bills also shared their title and much of their content with the Fairness in Women’s Sports Act, first introduced in 2019 by Idaho Rep. Ehardt.</p><p>The bill was designed to ban students who were listed as male on their birth certificate from playing on any sports designated for women. It also introduced the ability for schools to be sued by “any student who is deprived of an athletic opportunity or suffers any direct or indirect harm” from violations of the law. The “cause of action” mirrors bans on transgender medical care for minors.</p><p>Rep. Ehardt told <a href="https://missoulacurrent.com/transgender-athlete-bill/">several media </a>outlets she began researching high school sports legislation after finding that two transgender women won Idaho state track meets in 2018. After Ehardt reached out, the Alliance Defending Freedom found a previous state bill that required specific protocols for middle school sports and began drafting legislation.</p><p>Ehardt herself has traveled to other states to testify on behalf of the model legislation, which is often copied verbatim.</p><p>Over 16 states introduced legislation called the “Fairness in Women’s Sports Act” or used language similar to the original Idaho bill, according to our analysis. Florida also used language from the Idaho bill to amend a <a href="https://legiscan.com/FL/text/S1028/id/2386941">large education bill</a> at line 1,700.</p><p>Several changes were also made over the years as states modified the original act.</p><p>In <a href="https://legiscan.com/MO/text/SB165/id/2631290">Missouri’s 2023 “Save Women’s Sports Act,” </a>it explicitly denies state funding for any school not abiding by the law. It also adds a passage allowing schools to provide “alternative accommodations” to transgender students not present in the original legislation, and has no physical verification process.</p><p><a href="https://legiscan.com/VA/text/SB723/id/2895660">Virginia’s 2025 bill</a> introduces stricter language. Rather than requiring “reproductive anatomy, genetic makeup, or normal endogenously produced testosterone levels,” like in the original Idaho bill, they require all three tests. Virginia also does not allow a state board to resolve disputes, instead putting discretion solely in the hands of physicians.</p><p>In February 2025, the Trump administration <a href="https://www.whitehouse.gov/presidential-actions/2025/02/keeping-men-out-of-womens-sports/">released another executive action</a> targeting transgender athletes and sports participation, leading to the United States Olympic Committee banning transgender participants and updates to national college sports guidelines. While active litigation against the policy is ongoing, judges have not issued any restraining orders or injunctions.</p><p>The House of Representatives also passed a bill called the “Protection of Women and Girls in Sports Act of 2025,” which bears little resemblance to the Fairness in Women’s Sports Act but still amends Title IX to achieve a similar purpose.</p><p>The Alliance Defending Freedom began utilizing model legislation to target transgender people in the early 2010s as legislators introduced “bathroom bills” across the country, targeting which bathrooms transgender people could use.</p><p>Model legislation, such as the ADF’s <a href="https://www.leg.state.co.us/CLICS/CLICS2015A/commsumm.nsf/b4a3962433b52fa787256e5f00670a71/4f3a48ec0a54330687257de2005e3f8c/%24FILE/15HouseState0204AttachC.pdf#page=5">Student Physical Privacy Act,</a> was promoted in 2014 and adopted by several lawmakers. Sponsors of the Kansas version of this bill “thought it did a good job of being thorough and concise, so we adopted parts of it,” as reported by <a href="https://www.motherjones.com/politics/2016/04/alliance-defending-freedom-lobbies-anti-lgbt-bathroom-bills/">Mother Jones</a>.</p>';
+const kicker = "<p>Representative republications</p>";
+const rep1 = `<p>Certain legislators introduced bills across several areas of transgender rights that mirrored model legislation.</p><p>In 2023, Oklahoma Representative Shane Jett introduced both the <a href="https://legiscan.com/OK/text/SB1007/id/2650656">Save Men's Sports Act</a> and a copy of the <a href="https://legiscan.com/OK/drafts/SB878/2023">Save Adolescents from Experimentation (SAFE) Act</a>.</p><p>It’s expected that certain states innovate and create policy while others look to other politicians for inspiration, Professor Karsh said.</p><p>“Some state legislatures are highly professionalized with higher salaries, they meet year-round, they have a lot of staff,” Karsh said. “Then you have other legislatures where the lawmakers are part-time and their salaries are pretty low and they don't have staff support.”</p><p><a href="https://ehansen4.sites.luc.edu/documents/Hansen_Jansa_Complexity.pdf">Studies</a> <a href="https://journals.sagepub.com/doi/abs/10.1177/1532673X18776628">support</a> the claim that understaffed legislatures are more likely to pull from model legislation or other legislation from around the country.</p>`;
+const rep2 = `<p>Oklahoma legislators’ base salary starts at less than $50,000, and they are only in session for part of the year.</p><p>Rhode Island Senator Elaine Morgan introduced a copy of the <a href="https://legiscan.com/RI/bill/S2501/2022">Save Women’s Sports Act</a> and sponsored two versions of <a href="https://legiscan.com/RI/bill/S2703/2024">Rhode Island's Children Deserve Help Not Harm Act</a> in both 2024 and 2025, one of which is currently still in committee.</p><p>Rhode Island pays senators less than $18,000 per year.</p><p>Neither office responded to requests for comment.</p><p>The proliferation of model legislation demonstrates a broader political strategy that extends beyond policy, and diverts resources from local issues to a national agenda, Karsh said.</p><p>"Republicans don't really care about trans people as a threat in and of ourselves," said Maia Monet, transgender resource manager at The Center Orlando, an LGBTQ organization. "They know they can rile up their base by mentioning trans people."</p><p>Americans have grown more supportive of restrictive polices like these, <a href="https://www.pewresearch.org/short-reads/2025/02/26/americans-have-grown-more-supportive-of-restrictions-for-trans-people-in-recent-years/">polls show</a>. Nearly 66% support bans on transgender athletes, and 56% support banning transgender medical care for minors.</p><p>With the same language showing up across states, these efforts have become part of a political playbook reshaping the debate over civil rights and states’ power.</p>`;
+const doc = {
+  coldopen,
+  headline,
+  leadin,
+  intro,
+  intro2,
+  intro4,
+  safesubtitle,
+  safeactintro,
+  safegraphic,
+  safeact2,
+  fiwsasubtitle,
+  fiwsa,
+  kicker,
+  rep1,
+  rep2
+};
+function _page($$payload, $$props) {
+  push();
+  let value1;
+  let value2;
+  const steps = Object.values(doc.coldopen[0]);
+  const safe_steps = Object.values(doc.safegraphic[0]);
+  let $$settled = true;
+  let $$inner_payload;
+  function $$render_inner($$payload2) {
+    $$payload2.out += `<section><div class="section-container svelte-cukmhf"><div class="steps-container svelte-cukmhf">`;
+    Scrolly($$payload2, {
+      get value() {
+        return value1;
+      },
+      set value($$value) {
+        value1 = $$value;
+        $$settled = false;
+      },
+      children: ($$payload3) => {
+        const each_array = ensure_array_like(steps);
+        $$payload3.out += `<!--[-->`;
+        for (let i = 0, $$length = each_array.length; i < $$length; i++) {
+          let text = each_array[i];
+          $$payload3.out += `<div${attr_class("step svelte-cukmhf", void 0, { "active": value1 === i })}><div class="step-content svelte-cukmhf">${html(text)}</div></div>`;
+        }
+        $$payload3.out += `<!--]-->`;
+      },
+      $$slots: { default: true }
+    });
+    $$payload2.out += `<!----></div> <div class="sticky svelte-cukmhf">`;
+    BillColdOpen($$payload2, { step: value1 });
+    $$payload2.out += `<!----></div></div> <div class="body-text svelte-cukmhf"><div class="hero svelte-cukmhf"><h1>${html(doc.headline)}</h1> <h2 class="svelte-cukmhf">${html(doc.leadin)}</h2> <h3>By C.J. Robinson</h3> <br/></div> <div>${html(doc.intro)}</div> `;
+    ACLUChart($$payload2);
+    $$payload2.out += `<!----> <br/> <div>${html(doc.intro2)}</div> <div>${html(doc.intro3)}</div> <div>${html(doc.intro4)}</div> <h3>${html(doc.safesubtitle)}</h3> <div>${html(doc.safeactintro)}</div></div> <div class="section-container svelte-cukmhf"><div class="steps-container svelte-cukmhf">`;
+    Scrolly($$payload2, {
+      get value() {
+        return value2;
+      },
+      set value($$value) {
+        value2 = $$value;
+        $$settled = false;
+      },
+      children: ($$payload3) => {
+        const each_array_1 = ensure_array_like(safe_steps);
+        $$payload3.out += `<!--[-->`;
+        for (let i = 0, $$length = each_array_1.length; i < $$length; i++) {
+          let text = each_array_1[i];
+          $$payload3.out += `<div${attr_class("step svelte-cukmhf", void 0, { "active": value2 === i })}><div class="step-content svelte-cukmhf">${html(text)}</div></div>`;
+        }
+        $$payload3.out += `<!--]--> <div class="spacer svelte-cukmhf"></div>`;
+      },
+      $$slots: { default: true }
+    });
+    $$payload2.out += `<!----></div> <div class="sticky svelte-cukmhf">`;
+    SAFEActTextChange($$payload2, { step: value2 });
+    $$payload2.out += `<!----></div></div> <div class="body-text svelte-cukmhf"><div>${html(doc.safeact2)}</div> <h3>${html(doc.fiwsasubtitle)}</h3> <p>${html(doc.fiwsa)}</p> <h3>${html(doc.kicker)}</h3> <p>${html(doc.rep1)}</p> <br/> `;
+    Map($$payload2);
+    $$payload2.out += `<!----> <br/> <p>${html(doc.rep2)}</p></div> <div class="hero svelte-cukmhf"></div></section>`;
+  }
+  do {
+    $$settled = true;
+    $$inner_payload = copy_payload($$payload);
+    $$render_inner($$inner_payload);
+  } while (!$$settled);
+  assign_payload($$payload, $$inner_payload);
+  pop();
+}
+export {
+  _page as default
+};
