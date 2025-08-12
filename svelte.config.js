@@ -13,8 +13,11 @@ const config = {
 
 	kit: {
 		paths: {
-			base: dev ? '' : '/trans-model-leg'
+  base: process.env.NODE_ENV === 'production' ? '/trans-model-leg' : '',
+           relative: false
 		},
+		appDir: 'app',
+
 		adapter: adapter({
 			pages: 'build',
 			assets: 'build',

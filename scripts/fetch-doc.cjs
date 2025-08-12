@@ -43,6 +43,7 @@ function fetchAndSaveDoc() {
   function getAccessToken(callback) {
     var authUrl = oauth2Client.generateAuthUrl({
       access_type: 'offline',
+      prompt: 'consent',
       scope: ['https://www.googleapis.com/auth/drive']
     });
     console.log('Authorize this app by visiting this url:', authUrl);
@@ -68,7 +69,7 @@ function fetchAndSaveDoc() {
       if (err && err.code === 401) {
         // Token invalid/expired, delete and restart auth
         console.warn('Token invalid or expired, removing token.json and restarting auth.');
-        try { fs.unlinkSync('token.json'); } catch (e) {}
+        try { fs.unlinkSync(TOKEN_PATH); } catch (e) {}
         getAccessToken(proceed);
       } else if (err) {
         return console.error(err);
@@ -78,14 +79,14 @@ function fetchAndSaveDoc() {
     });
   }
 
-  if (fs.existsSync('token.json')) {
+  if (fs.existsSync(TOKEN_PATH)) {
     try {
-      var token = JSON.parse(fs.readFileSync('token.json'));
+      var token = JSON.parse(fs.readFileSync(TOKEN_PATH));
       oauth2Client.setCredentials(token);
       tryWithToken();
     } catch (e) {
       // If token.json is corrupt, delete and restart
-      try { fs.unlinkSync('token.json'); } catch (e2) {}
+      try { fs.unlinkSync(TOKEN_PATH); } catch (e2) {}
       getAccessToken(proceed);
     }
   } else {
@@ -209,6 +210,11 @@ function fetchAndSaveDoc() {
   function proceed() {
     drive.files.get({fileId: KEY}, function (err, doc) {
       if (err) return console.error(err);
+      if (!doc.exportLinks || !doc.exportLinks['text/html']) {
+        console.error('ERROR: exportLinks["text/html"] not found. This file may not be a Google Doc, or you may not have access.');
+        console.error('Full doc object returned:', JSON.stringify(doc, null, 2));
+        return;
+      }
       var export_link = doc.exportLinks['text/html'];
       oauth2Client._makeRequest({method: "GET", uri: export_link}, function(err, body) {
         if (err) return console.error(err);
