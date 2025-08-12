@@ -101,6 +101,10 @@
     if (step >= add_small_bills_step) {
       newSmallBills.push(billsData);
     }    
+    if (step === sc_scroll_bill_step) {
+      scrollTo(scrollBillNodes[0], 0);
+
+    }
     smallBills = newSmallBills[0];
     introBills = [...newBills];
   }
@@ -161,7 +165,7 @@
           "color",
           (step >= highlight_changed_text_step) ? "green" : "transparent"
         );
-    }, 2000);
+    }, 0);
 
     setTimeout(() => {
       // Fade in: select all fade-in spans, cascade by index
@@ -215,7 +219,6 @@
     >
       <div>
         {#if bill.id == "ak"}
-          <p>Original Bill</p>
         {/if}
       </div>
       <div class="bill-content">
