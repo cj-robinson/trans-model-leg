@@ -16,10 +16,9 @@ const config = {
 			base: dev ? '' : '/trans-model-leg'
 		},
 		adapter: adapter({
-			pages: 'docs',
-			assets: 'docs',
-			fallback: "index.html",
-			strict: false
+			pages: 'build',
+			assets: 'build',
+			strict: true
 		})
 	}
 };

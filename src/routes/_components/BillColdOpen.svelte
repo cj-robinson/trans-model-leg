@@ -4,6 +4,7 @@
   import * as d3 from "d3";
   import Papa from "papaparse";
   import { flip } from "svelte/animate";
+  import { assets } from '$app/paths';
 
   export let step;
 
@@ -23,7 +24,7 @@
 
   onMount(async () => {
       // Fetch and parse CSV
-    const billsResponse = await fetch("/fiwsa_bills_updated.csv");
+    const billsResponse = await fetch(`${assets}/fiwsa_bills_updated.csv`);
     const billsCsvText = await billsResponse.text();
     const parsed = Papa.parse(billsCsvText, { header: true });
     billsData = parsed.data.filter(
@@ -32,16 +33,16 @@
     );
  
     // Fetch only the original and Montana act texts and HTML
-    const originalActTextResponse = await fetch("/original_act.txt");
+    const originalActTextResponse = await fetch(`${assets}/original_act.txt`);
     originalActText = await originalActTextResponse.text();
 
-    const montanaActTextResponse = await fetch("/montana_act.txt");
+    const montanaActTextResponse = await fetch(`${assets}/montana_act.txt`);
     montanaActText = await montanaActTextResponse.text();
 
-    const originalActHTMLResponse = await fetch("/original_act.html");
+    const originalActHTMLResponse = await fetch(`${assets}/original_act.html`);
     originalActHTML = await originalActHTMLResponse.text();
     
-    const montanaActHTMLResponse = await fetch("/montana_act.html");
+    const montanaActHTMLResponse = await fetch(`${assets}/montana_act.html`);
     montanaActHTML = await montanaActHTMLResponse.text();
     
     // Update the bill objects with HTML content

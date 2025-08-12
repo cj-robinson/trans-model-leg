@@ -7,6 +7,7 @@
   import * as d3 from "d3";
   import Papa from "papaparse";
   import { flip } from "svelte/animate";
+  import { assets } from '$app/paths';
 
   export let step;
 
@@ -29,10 +30,11 @@
   let bold_text_step = 2;
   let highlight_changed_text_step = 3; 
   let sc_bill_step = 4; 
+  let sc_scroll_bill_step = 5;
 
   onMount(async () => {
     // Fetch and parse CSV
-    // const billsResponse = await fetch("/fiwsa_bills_updated.csv");
+    // const billsResponse = await fetch(`${assets}/fiwsa_bills_updated.csv`);
     // const billsCsvText = await billsResponse.text();
     // const parsed = Papa.parse(billsCsvText, { header: true });
     // billsData = parsed.data.filter(
@@ -40,15 +42,15 @@
     //     bill.state && bill.text && bill.text.trim()
     // );
 
-    const akActResponse = await fetch("/ak_safe.html");
+    const akActResponse = await fetch(`${assets}/ak_safe.html`);
     akActHTML = await akActResponse.text();
     akBill = { id: "ak", html: akActHTML };
 
-    const miActResponse = await fetch("/mi_safe.html");
+    const miActResponse = await fetch(`${assets}/mi_safe.html`);
     miActHTML = await miActResponse.text();
     miBill = { id: "mi", html: miActHTML };
 
-    const scActResponse = await fetch("/sc_safe.html");
+    const scActResponse = await fetch(`${assets}/sc_safe.html`);
     scActHTML = await scActResponse.text();
     scBill = { id: "sc", html: scActHTML };    
   });
@@ -82,11 +84,20 @@
       scrollTo(scrollBillNodes[1], 1880);
     }
     if (step === scroll_step - 1) {
-      scrollTo(scrollBillNodes[0],0);
+      scrollTo(scrollBillNodes[0],0);      
     }    
     if (step >= sc_bill_step) {
       newBills.push(scBill);
     }
+    if (step === sc_scroll_bill_step) {
+      scrollTo(scrollBillNodes[0],3750);
+      scrollTo(scrollBillNodes[1], 1880);
+    }    
+    if (step === sc_scroll_bill_step - 1) {
+      scrollTo(scrollBillNodes[0],0);
+      scrollTo(scrollBillNodes[1], 0);
+
+    }      
     introBills = [...newBills];
     console.log(introBills);
   }
