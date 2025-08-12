@@ -175,28 +175,52 @@ function fetchAndSaveDoc() {
             return match.replace(/”|“/g, '"').replace(/‘|’/g, "'");
           });
           var parsed = archieml.load(parsedText);
-          // Recursively wrap paragraphs (split by double newlines) in <p> tags in all string values
-          function wrapParagraphs(obj) {
+          // Recursively wrap paragraphs in <p> tags only if:
+          // 1) the value is nested (not at the root), or
+          // 2) the value is a multi-paragraph string (contains two or more paragraphs)
+          // Only wrap in <p> if nested or multi-paragraph. Top-level single-paragraph values remain plain.
+          function wrapParagraphs(obj, isNested = false, key = null) {
             if (typeof obj === 'string') {
-              // Split by two or more newlines, trim, and wrap each paragraph
-              return obj
-                .split(/\n{2,}/)
-                .map(p => `<p>${p.replace(/\n/g, ' ').trim()}</p>`)
-                .join('');
+              // Split into paragraphs, ignoring empty/whitespace-only ones
+              const paragraphs = obj.split(/\n{2,}/).map(p => p.trim()).filter(p => p.length > 0);
+              if (!isNested && key) {
+                console.log(`DEBUG: Key: ${key}`);
+                console.log(`DEBUG: Raw value:`, JSON.stringify(obj));
+                console.log(`DEBUG: Paragraphs:`, paragraphs);
+              }
+              if (isNested) {
+                // Always wrap nested string values in <p>
+                return paragraphs.map(p => `<p>${p.replace(/\n/g, ' ').trim()}</p>`).join('');
+              } else if (paragraphs.length > 1) {
+                // Multi-paragraph top-level value: wrap each paragraph
+                return paragraphs.map(p => `<p>${p.replace(/\n/g, ' ').trim()}</p>`).join('');
+              } else {
+                // Single-paragraph top-level value: leave as plain string, collapse all whitespace
+                return paragraphs.length === 1 ? paragraphs[0] : '';
+              }
             } else if (Array.isArray(obj)) {
-              return obj.map(wrapParagraphs);
+              return obj.map(item => wrapParagraphs(item, true));
             } else if (obj && typeof obj === 'object') {
               const out = {};
-              for (const k in obj) out[k] = wrapParagraphs(obj[k]);
+              for (const k in obj) out[k] = wrapParagraphs(obj[k], true, k);
               return out;
             } else {
               return obj;
             }
           }
-          const parsedWithPTags = wrapParagraphs(parsed);
-          // Save to src/routes/_data/doc.json with <p> tags for paragraphs
+          // For top-level keys, pass the key name for debug
+          const parsedWithPTags = (() => {
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+              const out = {};
+              for (const k in parsed) out[k] = wrapParagraphs(parsed[k], false, k);
+              return out;
+            } else {
+              return wrapParagraphs(parsed, false, null);
+            }
+          })();
+          // Save to src/routes/_data/doc.json with <p> tags for nested or multi-paragraph values only
           fs.writeFileSync('src/routes/_data/doc.json', JSON.stringify(parsedWithPTags, null, 2));
-          console.log('Document parsed and saved to src/routes/_data/doc.json (with <p> tags for paragraphs)');
+          console.log('Document parsed and saved to src/routes/_data/doc.json (with <p> tags for nested or multi-paragraph values only)');
         });
         var parser = new htmlparser.Parser(handler);
         parser.write(data);

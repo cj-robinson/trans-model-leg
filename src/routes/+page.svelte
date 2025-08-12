@@ -3,7 +3,7 @@
   import BillColdOpen from "./_components/BillColdOpen.svelte";
   import ACLUChart from "./_components/ACLUChart.svelte";
   import SAFEActTextChange from "./_components/SAFEActTextChange.svelte";
-
+  import Methodology from "./_components/Methodology.svelte";
   import Map from "./_components/Map.svelte";
 
   import doc from "./_data/doc.json";
@@ -37,6 +37,9 @@
       <BillColdOpen step={value1} />
     </div>
   </div>
+  <br />
+  <br />
+  <br />
 
   <div class="body-text">
     <div class="hero">
@@ -46,8 +49,8 @@
       <br />
     </div>
     <div>{@html doc.intro}</div>
-      <ACLUChart />
-    <br />      
+    <ACLUChart />
+    <br />
     <div>{@html doc.intro2}</div>
     <div>{@html doc.intro3}</div>
     <div>{@html doc.intro4}</div>
@@ -76,12 +79,15 @@
     <h3>{@html doc.kicker}</h3>
     <p>{@html doc.rep1}</p>
 
-       <br />
+    <br />
     <Map />
-    <br /> 
+    <br />
     <p>{@html doc.rep2}</p>
+    <br />
+    <br />
+    <br />
+    <Methodology />
   </div>
-  <div class="hero"></div>
 </section>
 
 <style>
@@ -99,8 +105,7 @@
   }
 
   .hero {
-    height: 60vh;
-     display: flex;
+    display: flex;
     font-family: "Libre Franklin", sans-serif;
 
     place-items: center;

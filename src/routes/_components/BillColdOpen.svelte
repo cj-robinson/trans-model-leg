@@ -68,6 +68,7 @@
     }    
     introBills = newBills;
     smallBills = newSmallBills[0];
+    console.log(step);
   }
 
   afterUpdate(() => {

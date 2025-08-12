@@ -30,7 +30,7 @@
   let sc_bill_step = 5;
   let sc_scroll_bill_step = 6;
   let highlight_changed_text_step2 = 6;
-  let add_small_bills_step = 7
+  let add_small_bills_step = 7;
 
   onMount(async () => {
     // Fetch and parse CSV
@@ -38,8 +38,7 @@
     const billsCsvText = await billsResponse.text();
     const parsed = Papa.parse(billsCsvText, { header: true });
     billsData = parsed.data.filter(
-      (bill) =>
-        bill.state && bill.text && bill.text.trim()
+      (bill) => bill.state && bill.text && bill.text.trim()
     );
 
     const akActResponse = await fetch(`${assets}/ak_safe.html`);
@@ -91,7 +90,7 @@
       newBills.push(scBill);
     }
     if (step === sc_scroll_bill_step) {
-      scrollTo(scrollBillNodes[0], 3750);
+      scrollTo(scrollBillNodes[0], 2800);
       scrollTo(scrollBillNodes[1], 1730);
     }
     if (step === sc_scroll_bill_step - 1) {
@@ -100,13 +99,16 @@
     }
     if (step >= add_small_bills_step) {
       newSmallBills.push(billsData);
-    }    
-    if (step === sc_scroll_bill_step) {
+    }
+    if (step < add_small_bills_step) {
+      newSmallBills = [0];
+    }
+    if (step === add_small_bills_step) {
       scrollTo(scrollBillNodes[0], 0);
-
     }
     smallBills = newSmallBills[0];
     introBills = [...newBills];
+    console.log(step);
   }
 
   afterUpdate(() => {
@@ -139,56 +141,70 @@
         .duration(100)
         .style(
           "color",
-          step >= highlight_changed_text_step  ? "transparent" : "black"
+          step >= highlight_changed_text_step ? "transparent" : "black"
         );
     }, 2000);
 
     setTimeout(() => {
+      // Fade in: select all fade-in spans, cascade by index
+      d3.selectAll('[class^="ngram-text-fade-in-"]')
+        .transition()
+        .delay((d, i) => i * 100)
+        .duration(100)
+        .style(
+          "color",
+          step >= highlight_changed_text_step ? "green" : "transparent"
+        );
+    }, 2000);
+
+    // Fade in: select all fade-in spans, cascade by index
+    d3.selectAll(".transparent")
+      .transition()
+      .delay((d, i) => i * 100)
+      .duration(200)
+      .style(
+        "color",
+        step >= highlight_changed_text_step + 1 ? "black" : "transparent"
+      );
+  });
+
+  $: if (step === highlight_changed_text_step2) {
+    setTimeout(() => {
       // Fade out: select all fade-out spans, cascade by index
       d3.selectAll('[class^="sc-ngram-text-fade-out-"]')
         .transition()
-        .delay((d, i) => i * 200)
+        .delay((d, i) => i * 50)
         .duration(100)
         .style(
           "color",
           step >= highlight_changed_text_step2 ? "transparent" : "black"
         );
-    }, 2000);    
-    
-    setTimeout(() => {
-      // Fade in: select all fade-in spans, cascade by index
-      d3.selectAll('[class^="ngram-text-fade-in-"]')
-        .transition("y")
-        .delay((d, i) => i * 100)
-        .duration(100)
-        .style(
-          "color",
-          (step >= highlight_changed_text_step) ? "green" : "transparent"
-        );
-    }, 0);
+    }, 1000);
 
     setTimeout(() => {
       // Fade in: select all fade-in spans, cascade by index
       d3.selectAll('[class^="sc-ngram-text-fade-in-"]')
         .transition("y")
-        .delay((d, i) => i * 200)
+        .delay((d, i) => i * 50)
         .duration(100)
         .style(
           "color",
           step >= highlight_changed_text_step2 ? "green" : "transparent"
         );
-    }, 2000);    
+    }, 1000);
 
-    // Fade in: select all fade-in spans, cascade by index
-    d3.selectAll(".transparent")
-      .transition("z")
-      .delay((d, i) => i * 50)
-      .duration(50)
-      .style(
-        "color",
-          (step >= highlight_changed_text_step + 1 && step < sc_bill_step) || step >= highlight_changed_text_step2 ? "black" : "transparent"
-      );
-  });
+    setTimeout(() => {
+      // Fade in: select all fade-in spans, cascade by index
+      d3.selectAll(".sc-transparent")
+        .transition()
+        .delay((d, i) => i * 50)
+        .duration(100)
+        .style(
+          "color",
+          step >= highlight_changed_text_step2 ? "black" : "trasnparent"
+        );
+    }, 2000);
+  }
 
   let width;
   let height;
@@ -199,51 +215,58 @@
   bind:offsetWidth={width}
   bind:offsetHeight={height}
 >
-  {#each introBills as bill, index (bill.id)}
-    <div
-      class="bill scroll-bill"
-      bind:this={scrollBillNodes[index]}
-             style:height="{step >= add_small_bills_step ? '200px' : '400px'}"
-        style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"    
-      animate:flip
-      in:fly={{
-        duration: 1000,
-        x: 0, // Slide in from the left
-        y: 200, // No vertical movement
-      }}
-      out:fly={{
-        duration: 1000,
-        x: 0, // Slide out to the right
-        y: -100, // No vertical movement
-      }}
-    >
-      <div>
-        {#if bill.id == "ak"}
-        {/if}
-      </div>
-      <div class="bill-content">
-        {@html bill.html}
-      </div>
-    </div>
-  {/each}
-   <div class="bill-box">
-    {#each smallBills as bill, index (bill.bill_id)}
+  <div class="bill-row">
+    {#each introBills as bill, index (bill.id)}
       <div
-        class="small-bill"
-        animate:flip={{}}
-        in:fly={{}}
-      >           
-       <div class="small-bill-content-header">{bill.state} - {bill.year_start}</div>
+        class="bill scroll-bill"
+        bind:this={scrollBillNodes[index]}
+        style:height={step >= add_small_bills_step ? "200px" : "400px"}
+        style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"
+        animate:flip
+        in:fly={{
+          duration: 1000,
+          x: 0, // Slide in from the left
+          y: 200, // No vertical movement
+        }}
+        out:fly={{
+          duration: 1000,
+          x: 0, // Slide out to the right
+          y: -100, // No vertical movement
+        }}
+      >
+        <div>
+          {#if bill.id == "ak"}{/if}
+        </div>
+        <div class="bill-content">
+          {@html bill.html}
+        </div>
+      </div>
+    {/each}
+  </div>
+  <div class="bill-box">
+    {#each smallBills as bill, index (bill.bill_id)}
+      <div class="small-bill" animate:flip={{}} in:fly={{}}>
+        <div class="small-bill-content-header">
+          {bill.state} - {bill.year_start}
+        </div>
         <div class="small-bill-content">
           {bill.text}
         </div>
-      </div>  
+      </div>
     {/each}
   </div>
 </div>
 
 <style>
-  :global(.transparent) {
+  :global(.transparent),
+  :global(.sc-transparent) {
+    color: transparent;
+  }
+
+  :global([class^="sc-ngram-text-fade-in-"]) {
+    color: transparent;
+  }
+  :global([class^="ngram-text-fade-in-"]) {
     color: transparent;
   }
 
