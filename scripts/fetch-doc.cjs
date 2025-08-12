@@ -183,11 +183,6 @@ function fetchAndSaveDoc() {
             if (typeof obj === 'string') {
               // Split into paragraphs, ignoring empty/whitespace-only ones
               const paragraphs = obj.split(/\n{2,}/).map(p => p.trim()).filter(p => p.length > 0);
-              if (!isNested && key) {
-                console.log(`DEBUG: Key: ${key}`);
-                console.log(`DEBUG: Raw value:`, JSON.stringify(obj));
-                console.log(`DEBUG: Paragraphs:`, paragraphs);
-              }
               if (isNested) {
                 // Always wrap nested string values in <p>
                 return paragraphs.map(p => `<p>${p.replace(/\n/g, ' ').trim()}</p>`).join('');

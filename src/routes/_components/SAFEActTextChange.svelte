@@ -73,7 +73,7 @@
   $: {
     let newBills = [];
     let newSmallBills = [];
-    if (step >= 0 || step === undefined) {
+    if (step >= 0) {
       newBills.push(akBill);
     }
     if (step >= mi_bill_step && step < sc_bill_step) {
@@ -219,6 +219,7 @@
     {#each introBills as bill, index (bill.id)}
       <div
         class="bill scroll-bill"
+        class:original-bill={bill.id === "ak"}
         bind:this={scrollBillNodes[index]}
         style:height={step >= add_small_bills_step ? "200px" : "400px"}
         style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"
@@ -258,6 +259,9 @@
 </div>
 
 <style>
+
+
+ 
   :global(.transparent),
   :global(.sc-transparent) {
     color: transparent;

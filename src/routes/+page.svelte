@@ -59,6 +59,7 @@
   </div>
   <div class="section-container">
     <div class="steps-container">
+        <div class="spacer" />
       <Scrolly bind:value={value2}>
         {#each safe_steps as text, i}
           <div class="step" class:active={value2 === i}>

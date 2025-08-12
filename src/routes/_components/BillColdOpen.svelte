@@ -18,9 +18,10 @@
   let originalBill = { id: "original", html: ""};
   let montanaBill = { id: "montana", html: ""};
 
-  let change_text_step = 3;
+  let zoom_step = 1;
   let intro_montana_step = 2;
-  let add_small_bills_step = 5;  
+  let change_text_step = 3;
+  let add_small_bills_step = 4;  
 
   onMount(async () => {
       // Fetch and parse CSV
@@ -85,6 +86,24 @@
       .delay((d, i) => i * 100)
       .duration(100)
       .style("color", step >= change_text_step ? "green" : "transparent");
+
+    d3.select("#original-bill-title")
+      .classed("highlight-bill-title", step >= zoom_step)      
+      
+    d3.selectAll(".chart-container")
+      .style("padding", step === add_small_bills_step ? "0 0" : "70px 0")
+
+    // d3.selectAll(".bill")
+    //   .transition("asdj")
+    //   .duration(2000)
+    //   .style("transform", step === zoom_step ? "scale(2)" : "")
+
+
+    // d3.selectAll(".bill")
+    //   .transition("sadjia")
+    //   .duration(2000)
+    //   .style("transform", step === zoom_step + 1 ? "scale(1)" : "")
+
   });
 
   let width;
@@ -96,13 +115,15 @@
   class="chart-container"
   bind:offsetWidth={width}
   bind:offsetHeight={height}
+  style:padding ="{step >= add_small_bills_step ? '0 0':'70px 0'}" 
 >
   <div class="bill-row">
     {#each introBills as bill, index (bill.id)}
       <div
         class="bill"
         class:original-bill={bill.id === "original"}
-        style:height="{step >= add_small_bills_step ? '200px' : '400px'}"
+        style:height={step >= add_small_bills_step ? '200px' : '400px'}
+        class:zoom-in={step === zoom_step}
         style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"        
         animate:flip={{}}
         in:fly={{
@@ -144,6 +165,37 @@
   :global(.montana-bill [class^="ngram-text-fade-in-"]) {
     color: transparent;
   }
+  :global(.bill) {
+    transform: scale(1,1);
+  }
+
+
+  :global(.highlight-bill-title) {
+    animation-name: highlight;
+    animation-duration: 0.75s;
+    animation-fill-mode: forwards;
+    background-image: linear-gradient(to right, yellow 50%, transparent 50%);
+    background-size: 200% 100%;
+    background-position: right;
+  }
+
+    .zoom-in {
+    animation: zoomIn 2000ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+  
+  .zoom-out {
+    animation: zoomOut 2000ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+  
+  @keyframes zoomIn {
+    from { transform: scale(1); }
+    to { transform: scale(2); }
+  }
+  
+  @keyframes zoomOut {
+    from { transform: scale(2); }
+    to { transform: scale(1); }
+  }
 
   @keyframes fadeHighlight {
     0% {
@@ -163,7 +215,10 @@
     }
   }
 
-
+@keyframes highlight {
+    from { background-position: right; }
+    to { background-position: left; }
+}
 
 
 </style>
