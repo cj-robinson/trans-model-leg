@@ -76,14 +76,55 @@ h1.header {
   display: inline-block;
   opacity: 1 !important;
 }
+
+.bill-year, .small-bill-year {
+  position: relative;
+  text-align: left;
+  z-index: 12;
+  opacity: 60%;
+}
+
+.bill-year {
+  font-size: 20px;
+  top:8px;
+  left: 20px;
+}
+
+.small-bill-year {
+  font-size: 16px;
+  top:12px;
+  left: 8px;
+}
+
+.small-bill-state {
+  position: absolute;
+  z-index: 14;
+  color: var(--leggreen);
+  opacity: 60%;
+  font-size: 30px;
+  font-family: "Libre Franklin", sans-serif;
+  font-weight: bold;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+}
+
 .bill-box {
-  display: flex-grid;
-  max-width: 700px;
-   margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  max-width: 750px;
+  margin: auto;
 }
 
 .bill-row {
-  position: flex;
+  display: flex;
+  justify-content: center;
+}
+
+.small-bill-container {
+  width: min-content;
 }
 
 .small-bill {
@@ -98,6 +139,7 @@ h1.header {
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.19);
   margin: 5px 5px ;
   padding: 2px;
+  position: relative;
 }
 
 .bill {
@@ -112,6 +154,10 @@ h1.header {
   overflow-y: hidden;
   hyphens: auto;
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+}
+
+.bill-container {
+  width: min-content;
 }
 
 .bill.scroll-bill {

@@ -4,7 +4,7 @@
   import * as d3 from "d3";
   import Papa from "papaparse";
   import { flip } from "svelte/animate";
-  import { assets } from '$app/paths';
+  import { assets } from "$app/paths";
 
   export let step;
 
@@ -13,26 +13,25 @@
   let montanaActHTML = "";
   let originalActText = "";
   let montanaActText = "";
-  
+
   // Bill objects for display, each with an id and html
-  let originalBill = { id: "original", html: ""};
-  let montanaBill = { id: "montana", html: ""};
+  let originalBill = { id: "original", html: "" };
+  let montanaBill = { id: "montana", html: "" };
 
   let zoom_step = 1;
   let intro_montana_step = 2;
   let change_text_step = 3;
-  let add_small_bills_step = 4;  
+  let add_small_bills_step = 4;
 
   onMount(async () => {
-      // Fetch and parse CSV
+    // Fetch and parse CSV
     const billsResponse = await fetch(`${assets}/fiwsa_bills_updated.csv`);
     const billsCsvText = await billsResponse.text();
     const parsed = Papa.parse(billsCsvText, { header: true });
     billsData = parsed.data.filter(
-      (bill) =>
-        bill.state && bill.text && bill.text.trim()
+      (bill) => bill.state && bill.text && bill.text.trim()
     );
- 
+
     // Fetch only the original and Montana act texts and HTML
     const originalActTextResponse = await fetch(`${assets}/original_act.txt`);
     originalActText = await originalActTextResponse.text();
@@ -42,10 +41,10 @@
 
     const originalActHTMLResponse = await fetch(`${assets}/original_act.html`);
     originalActHTML = await originalActHTMLResponse.text();
-    
+
     const montanaActHTMLResponse = await fetch(`${assets}/montana_act.html`);
     montanaActHTML = await montanaActHTMLResponse.text();
-    
+
     // Update the bill objects with HTML content
     originalBill.html = originalActHTML;
     montanaBill.html = montanaActHTML;
@@ -53,7 +52,7 @@
 
   let introBills = [originalBill];
   let smallBills = [];
-  
+
   $: {
     let newBills = [];
     let newSmallBills = [];
@@ -66,7 +65,7 @@
     }
     if (step >= add_small_bills_step) {
       newSmallBills.push(billsData);
-    }    
+    }
     introBills = newBills;
     smallBills = newSmallBills[0];
     console.log(step);
@@ -85,46 +84,37 @@
       .transition("y")
       .delay((d, i) => i * 100)
       .duration(100)
-      .style("color", step >= change_text_step ? "var(--leggreen)" : "transparent");
+      .style(
+        "color",
+        step >= change_text_step ? "var(--leggreen)" : "transparent"
+      );
 
-    d3.select("#original-bill-title")
-      .classed("highlight-bill-title", step >= zoom_step)      
-      
-    d3.selectAll(".chart-container")
-      .style("padding", step >= add_small_bills_step ? "0 0" : "70px 0")
+    d3.select("#original-bill-title").classed(
+      "highlight-bill-title",
+      step >= zoom_step
+    );
 
-    // d3.selectAll(".bill")
-    //   .transition("asdj")
-    //   .duration(2000)
-    //   .style("transform", step === zoom_step ? "scale(2)" : "")
-
-
-    // d3.selectAll(".bill")
-    //   .transition("sadjia")
-    //   .duration(2000)
-    //   .style("transform", step === zoom_step + 1 ? "scale(1)" : "")
-
+    d3.selectAll(".chart-container").style(
+      "padding",
+      step >= add_small_bills_step ? "0 0" : "70px 0"
+    );
   });
 
   let width;
   let height;
-
 </script>
 
 <div
   class="chart-container"
   bind:offsetWidth={width}
   bind:offsetHeight={height}
-  style:padding ="{step >= add_small_bills_step ? '0 0':'70px 0'}" 
+  style:padding={step >= add_small_bills_step ? "0 0" : "70px 0"}
 >
   <div class="bill-row">
     {#each introBills as bill, index (bill.id)}
       <div
-        class="bill"
-        class:original-bill={bill.id === "original"}
-        style:height={step >= add_small_bills_step ? '200px' : '400px'}
+        class="bill-container"
         class:zoom-in={step === zoom_step}
-        style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"        
         animate:flip={{}}
         in:fly={{
           x: bill.id === "original" ? -200 : 200,
@@ -134,30 +124,47 @@
         }}
         out:fly={{}}
       >
-        <div class="bill-content" class:montana-bill={bill.id === "montana"}>
-          {@html bill.html}
+        <div class="bill-year">
+          {#if bill.id === "original"}
+            2020
+          {/if}
+          {#if bill.id === "montana"}
+            2021
+          {/if}
+        </div>
+        <div
+          class="bill"
+          class:original-bill={bill.id === "original"}
+          style:height={step >= add_small_bills_step ? "200px" : "400px"}
+          style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"
+        >
+          <div class="bill-content" class:montana-bill={bill.id === "montana"}>
+            {@html bill.html}
+          </div>
         </div>
       </div>
     {/each}
   </div>
   <div class="bill-box">
     {#each smallBills as bill, index (bill.bill_id)}
-      <div
-        class="small-bill"
-        animate:flip={{}}
-        in:fly={{}}
-      >           
-       <div class="small-bill-content-header">{bill.state} - {bill.year_start}</div>
-        <div class="small-bill-content">
-          {bill.text}
+      <div class="small-container" animate:flip={{}} in:fly={{}}>
+        <div class="small-bill-year">
+          {bill.year_start}
         </div>
-      </div>  
+        <div class="small-bill">
+          <div class="small-bill-state">
+            {bill.state}
+          </div>
+          <div class="small-bill-content">
+            {bill.text}
+          </div>
+        </div>
+      </div>
     {/each}
   </div>
 </div>
 
 <style>
-
   :global(.montana-bill p) {
     color: gray;
   }
@@ -166,9 +173,8 @@
     color: transparent;
   }
   :global(.bill) {
-    transform: scale(1,1);
+    transform: scale(1, 1);
   }
-
 
   :global(.highlight-bill-title) {
     animation-name: highlight;
@@ -179,22 +185,30 @@
     background-position: right;
   }
 
-    .zoom-in {
+  .zoom-in {
     animation: zoomIn 2000ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
   }
-  
+
   .zoom-out {
     animation: zoomOut 2000ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
   }
-  
+
   @keyframes zoomIn {
-    from { transform: scale(1); }
-    to { transform: scale(2); }
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(2);
+    }
   }
-  
+
   @keyframes zoomOut {
-    from { transform: scale(2); }
-    to { transform: scale(1); }
+    from {
+      transform: scale(2);
+    }
+    to {
+      transform: scale(1);
+    }
   }
 
   @keyframes fadeHighlight {
@@ -215,10 +229,12 @@
     }
   }
 
-@keyframes highlight {
-    from { background-position: right; }
-    to { background-position: left; }
-}
-
-
+  @keyframes highlight {
+    from {
+      background-position: right;
+    }
+    to {
+      background-position: left;
+    }
+  }
 </style>

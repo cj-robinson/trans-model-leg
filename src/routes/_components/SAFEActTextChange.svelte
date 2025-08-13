@@ -73,9 +73,9 @@
   $: {
     let newBills = [];
     let newSmallBills = [];
-    if (step === 0 | step === undefined) {
+    if ((step === 0) | (step === undefined)) {
       newBills = [];
-    }    
+    }
     if (step >= 1) {
       newBills.push(akBill);
     }
@@ -118,7 +118,11 @@
   afterUpdate(() => {
     d3.selectAll(".bill.scroll-bill").style(
       "overflow-y",
-      step < scroll_step || step === undefined || step === highlight_changed_text_step + 1 ? "hidden" : "scroll"
+      step < scroll_step ||
+        step === undefined ||
+        step === highlight_changed_text_step + 1
+        ? "hidden"
+        : "scroll"
     );
 
     setTimeout(() => {
@@ -141,7 +145,9 @@
         .duration(100)
         .style(
           "color",
-          step >= highlight_changed_text_step ? "var(--leggreen)" : "transparent"
+          step >= highlight_changed_text_step
+            ? "var(--leggreen)"
+            : "transparent"
         );
     }, 2000);
 
@@ -177,7 +183,9 @@
         .duration(100)
         .style(
           "color",
-          step >= highlight_changed_text_step2 ? "var(--leggreen)" : "transparent"
+          step >= highlight_changed_text_step2
+            ? "var(--leggreen)"
+            : "transparent"
         );
     }, 1000);
 
@@ -206,12 +214,8 @@
   <div class="bill-row">
     {#each introBills as bill, index (bill.id)}
       <div
-        class="bill scroll-bill"
-        class:original-bill={bill.id === "ak"}
-        bind:this={scrollBillNodes[index]}
-        style:height={step >= add_small_bills_step ? "200px" : "400px"}
-        style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"
-        animate:flip
+        class="bill-container"
+        animate:flip={{}}
         in:fly={{
           duration: 1000,
           x: 0, // Slide in from the left
@@ -223,23 +227,44 @@
           y: -100, // No vertical movement
         }}
       >
-        <div>
-          {#if bill.id == "ak"}{/if}
+        <div class="bill-year">
+          {#if bill.id === "ak"}
+            2021
+          {/if}
+          {#if bill.id === "mi"}
+            2023
+          {/if}
+          {#if bill.id === "sc"}
+            2024
+          {/if}
         </div>
-        <div class="bill-content">
-          {@html bill.html}
+        <div
+          class="bill scroll-bill"
+          class:original-bill={bill.id === "ak"}
+          bind:this={scrollBillNodes[index]}
+          style:height={step >= add_small_bills_step ? "200px" : "400px"}
+          style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"
+        >
+          <div class="bill-content">
+            {@html bill.html}
+          </div>
         </div>
       </div>
     {/each}
   </div>
   <div class="bill-box">
     {#each smallBills as bill, index (bill.bill_id)}
-      <div class="small-bill" animate:flip={{}} in:fly={{}}>
-        <div class="small-bill-content-header">
-          {bill.state} - {bill.year_start}
+      <div class="small-container" animate:flip={{}} in:fly={{}}>
+        <div class="small-bill-year">
+          {bill.year_start}
         </div>
-        <div class="small-bill-content">
-          {bill.text}
+        <div class="small-bill">
+          <div class="small-bill-state">
+            {bill.state}
+          </div>
+          <div class="small-bill-content">
+            {bill.text}
+          </div>
         </div>
       </div>
     {/each}
@@ -247,9 +272,6 @@
 </div>
 
 <style>
-
-
- 
   :global(.transparent),
   :global(.sc-transparent) {
     color: transparent;
