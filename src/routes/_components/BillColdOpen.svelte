@@ -7,7 +7,7 @@
   import { assets } from "$app/paths";
   import { beforeUpdate } from "svelte";
 
-
+  // Removed HighlightHTML import
   import StepTracker from "./StepTracker.svelte";
 
   export let step;
@@ -31,16 +31,22 @@
 
   onMount(async () => {
     // Fetch and parse CSV
-    const billsResponse = await fetch(`${assets}/fiwsa_bills_updated.csv`);
+    const billsResponse = await fetch(`${assets}/fiwsa_bills_with_highlights.csv`);
     const billsCsvText = await billsResponse.text();
     const parsed = Papa.parse(billsCsvText, { header: true });
-    billsData = parsed.data.filter(
-      (bill) => bill.state && bill.text && bill.text.trim()
-    );
-
     // Fetch only the original and Montana act texts and HTML
     const originalActTextResponse = await fetch(`${assets}/original_act.txt`);
     originalActText = await originalActTextResponse.text();
+
+    // Bills data already has highlighting, just need to structure it
+    billsData = parsed.data
+      .filter((bill) => bill.state && bill.highlighted_html && bill.highlighted_html.trim())
+      .map((bill) => {
+        return {
+          ...bill,
+          html: bill.highlighted_html
+        };
+      });
 
     const montanaActTextResponse = await fetch(`${assets}/montana_act.txt`);
     montanaActText = await montanaActTextResponse.text();
@@ -83,7 +89,7 @@
       .transition()
       .delay((d, i) => i * 100)
       .duration(100)
-      .style("color", step >= change_text_step ? "transparent" : "black");
+      .style("color", step >= change_text_step || scrollDirection === "exit" ? "transparent" : "black");
 
     // Fade in: select all fade-in spans, cascade by index
     d3.selectAll('[class^="ngram-text-fade-in-"]')
@@ -92,7 +98,7 @@
       .duration(100)
       .style(
         "color",
-        step >= change_text_step ? "var(--leggreen)" : "transparent"
+        step >= change_text_step || scrollDirection === "exit" ? "var(--leggreen)" : "transparent"
       );
 
     d3.select("#original-bill-title").classed(
@@ -102,7 +108,7 @@
 
     d3.selectAll(".chart-container").style(
       "padding",
-      step >= add_small_bills_step ? "0 0" : "70px 0"
+      step >= add_small_bills_step  || scrollDirection === "exit" ? "0 0" : "70px 0"
     );
   });
 
@@ -143,7 +149,10 @@
         <div
           class="bill"
           class:original-bill={bill.id === "original"}
-          style:height={step >= add_small_bills_step || scrollDirection === "exit"? "200px" : "400px"}
+          style:height={step >= add_small_bills_step ||
+          scrollDirection === "exit"
+            ? "200px"
+            : "400px"}
           style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"
         >
           <div class="bill-content" class:montana-bill={bill.id === "montana"}>
@@ -173,7 +182,7 @@
             {bill.state}
           </div>
           <div class="small-bill-content">
-            {bill.text}
+            {@html bill.html}
           </div>
         </div>
       </div>
