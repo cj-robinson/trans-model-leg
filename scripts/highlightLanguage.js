@@ -2,10 +2,23 @@ import fs from 'fs';
 import path from 'path';
 import Papa from 'papaparse';
 
+// Get input filename from command line arguments or use default
+const inputFileName = process.argv[2] || 'fiwsa_bills_updated.csv';
+const originalFileName = process.argv[3] || 'original_act.text';
+
 // Path configuration
-const INPUT_CSV = path.join('static', 'fiwsa_bills_updated.csv');
-const ORIGINAL_ACT = path.join('static', 'original_act.txt');
-const OUTPUT_CSV = path.join('static', 'fiwsa_bills_with_highlights.csv');
+const INPUT_CSV = path.join('static', inputFileName);
+const ORIGINAL_ACT = path.join('static', originalFileName);
+
+// Generate output filename based on input filename
+const outputFileName = inputFileName.replace('.csv', '_with_highlights.csv');
+const OUTPUT_CSV = path.join('static', outputFileName);
+
+// Log the configuration
+console.log('📄 Configuration:');
+console.log(`   Input CSV: ${INPUT_CSV}`);
+console.log(`   Original Act: ${ORIGINAL_ACT}`);
+console.log(`   Output CSV: ${OUTPUT_CSV}`);
 
 /**
  * Cleans text by removing HTML, numbers, parenthetical content, and punctuation
@@ -49,11 +62,10 @@ function cleanText(text) {
  * Finds matching phrases between source and target text
  */
 function findMatchingPhrases(sourceText, targetText) {
-
   const sourceWords = sourceText.toLowerCase().split(/\s+/).filter((word) => word);
   const targetWords = targetText.toLowerCase().split(/\s+/).filter((word) => word);
 
-  const matches = [];
+  let matches = [];
   const minLength = 5; // 5-word phrases
   
   // Create a set of n-grams from the target text for faster lookup
@@ -62,7 +74,7 @@ function findMatchingPhrases(sourceText, targetText) {
     targetNgrams.add(targetWords.slice(i, i + minLength).join(" "));
   }
   
-  // Find matching n-grams in the source text
+  // Find matching n-grams in the source text without skipping
   for (let i = 0; i <= sourceWords.length - minLength; i++) {
     const ngram = sourceWords.slice(i, i + minLength).join(" ");
     if (targetNgrams.has(ngram)) {
@@ -79,11 +91,42 @@ function findMatchingPhrases(sourceText, targetText) {
         start: i,
         end: i + j - 1,
       });
-      // Skip ahead past this match
-      i += j - 1;
+      // No longer skip ahead - allow overlapping matches
     }
   }
+  
+  // Sort matches by start position
+  matches.sort((a, b) => a.start - b.start);
+  
+  // Merge overlapping matches
+  matches = mergeOverlappingMatches(matches);
+  
   return matches;
+}
+
+/**
+ * Merges overlapping matches into single spans
+ */
+function mergeOverlappingMatches(matches) {
+  if (matches.length <= 1) return matches;
+  
+  const mergedMatches = [matches[0]];
+  
+  for (let i = 1; i < matches.length; i++) {
+    const current = matches[i];
+    const previous = mergedMatches[mergedMatches.length - 1];
+    
+    // Check if current match overlaps with previous match
+    if (current.start <= previous.end + 1) {
+      // Merge by extending the end position of the previous match
+      previous.end = Math.max(previous.end, current.end);
+    } else {
+      // No overlap, add as new match
+      mergedMatches.push(current);
+    }
+  }
+  
+  return mergedMatches;
 }
 
 /**
@@ -116,38 +159,15 @@ function wrapWithHighlights(text, matches) {
  * Creates HTML with highlighted phrases matching the original text
  */
 function createHighlightedHtml(text, originalText) {
-  // Clean both texts for matching
+  // Clean both texts for matching and display
   const cleanedText = cleanText(text);
   const cleanedOriginal = cleanText(originalText);
   
-  // Create word position mappings from original to cleaned
-  const originalWords = text.split(/\s+/);
-  const cleanedWords = cleanedText.split(/\s+/).filter(word => word);
-  
-  // Build a mapping of cleaned text positions to original text positions
-  const positionMap = [];
-  let cleanedIndex = 0;
-  
-  for (let i = 0; i < originalWords.length; i++) {
-    // Skip words that would be removed by cleaning (numbers, punctuation only words, etc.)
-    const cleanedWord = cleanText(originalWords[i]);
-    if (cleanedWord && cleanedWord.trim().length > 0) {
-      positionMap[cleanedIndex] = i;
-      cleanedIndex++;
-    }
-  }
-  
   // Find matching phrases using the cleaned texts
-  const cleanedMatches = findMatchingPhrases(cleanedText, cleanedOriginal);
+  const matches = findMatchingPhrases(cleanedText, cleanedOriginal);
   
-  // Map cleaned text positions back to original text positions
-  const originalMatches = cleanedMatches.map(match => ({
-    start: positionMap[match.start],
-    end: positionMap[match.end]
-  }));
-  
-  // Create HTML with highlighted phrases
-  return wrapWithHighlights(text, originalMatches);
+  // Create HTML with highlighted phrases using the cleaned text
+  return wrapWithHighlights(cleanedText, matches);
 }
 
 async function preprocessBills() {

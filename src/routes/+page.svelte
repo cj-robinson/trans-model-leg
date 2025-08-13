@@ -51,9 +51,14 @@
     </div>
     <p><a href="https://cj-robinson.github.io">By C.J. Robinson</a></p>
     <div>{@html doc.intro}</div>
-   
-    <div class='graphic-title'>Anti-LGBTQ legislation significantly increased in recent years</div>
-    <div class='graphic-sub'>Number of anti-LGBTQ legislation introduced in the United States, as tracked by the ACLU</div> 
+
+    <div class="graphic-title">
+      Anti-LGBTQ legislation significantly increased in recent years
+    </div>
+    <div class="graphic-sub">
+      Number of anti-LGBTQ legislation introduced in the United States, as
+      tracked by the ACLU
+    </div>
     <ACLUChart />
     <br />
     <div>{@html doc.intro2}</div>
@@ -64,7 +69,7 @@
   </div>
   <div class="section-container">
     <div class="steps-container">
-        <div class="spacer" />
+      <div class="spacer" />
       <Scrolly bind:value={value2}>
         {#each safe_steps as text, i}
           <div class="step" class:active={value2 === i}>
@@ -86,6 +91,14 @@
     <p>{@html doc.rep1}</p>
 
     <br />
+    <div class="graphic-title">
+      Model Legislation is Introduced Around the Country, Often by Less
+      Well-Resourced Legislatures
+    </div>
+    <div class="graphic-sub">
+      Legislation introduced in the United States utilizing language found in
+      model bills
+    </div>
     <Map />
     <br />
     <p>{@html doc.rep2}</p>

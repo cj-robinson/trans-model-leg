@@ -97,7 +97,7 @@
       .delay((d, i) => i * 100)
       .duration(100)
       .style(
-        "color",
+        "background-color",
         step >= change_text_step || scrollDirection === "exit" ? "var(--leggreen)" : "transparent"
       );
 
@@ -196,7 +196,9 @@
   }
 
   :global(.montana-bill [class^="ngram-text-fade-in-"]) {
-    color: transparent;
+    color: white;
+    border-radius: 2px;
+    
   }
   :global(.bill) {
     transform: scale(1, 1);

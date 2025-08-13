@@ -39,12 +39,18 @@
 
   onMount(async () => {
     // Fetch and parse CSV
-    const billsResponse = await fetch(`${assets}/safe_act.csv`);
+    const billsResponse = await fetch(`${assets}/safe_act_with_highlights.csv`);
     const billsCsvText = await billsResponse.text();
     const parsed = Papa.parse(billsCsvText, { header: true });
-    billsData = parsed.data.filter(
-      (bill) => bill.state && bill.text && bill.text.trim()
-    );
+    // Bills data already has highlighting, just need to structure it
+    billsData = parsed.data
+      .filter((bill) => bill.state && bill.highlighted_html && bill.highlighted_html.trim())
+      .map((bill) => {
+        return {
+          ...bill,
+          html: bill.highlighted_html
+        };
+      });
 
     const akActResponse = await fetch(`${assets}/ak_safe.html`);
     akActHTML = await akActResponse.text();
@@ -148,7 +154,7 @@
         .delay((d, i) => i * 100)
         .duration(100)
         .style(
-          "color",
+          "background-color",
           step >= highlight_changed_text_step
             ? "var(--leggreen)"
             : "transparent"
@@ -186,7 +192,7 @@
         .delay((d, i) => i * 50)
         .duration(100)
         .style(
-          "color",
+          "background-color",
           step >= highlight_changed_text_step2
             ? "var(--leggreen)"
             : "transparent"
@@ -278,7 +284,7 @@
             {bill.state}
           </div>
           <div class="small-bill-content">
-            {bill.text}
+            {@html bill.html}
           </div>
         </div>
       </div>
@@ -293,10 +299,13 @@
   }
 
   :global([class^="sc-ngram-text-fade-in-"]) {
-    color: transparent;
+    color: white;
+    border-radius: 2px;
   }
   :global([class^="ngram-text-fade-in-"]) {
-    color: transparent;
+    color: white;
+    border-radius: 2px;
+
   }
 
   :global(p.bold) {
