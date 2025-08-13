@@ -21,11 +21,15 @@
   });
 
   $: {
-    if (step !== previousStep) {
+    if (step !== previousStep) {   
       // Only compare when both are defined numbers
       if (step !== undefined && previousStep !== undefined) {
         scrollDirection = step > previousStep ? "down" : "up";
       }
+      // Create special case for when step becomes undefined
+      else if (step === undefined && previousStep === 0) {
+        scrollDirection = "up"; // New state for exiting
+      }      
       // Create special case for when step becomes undefined
       else if (step === undefined && previousStep !== undefined) {
         scrollDirection = "exit"; // New state for exiting
