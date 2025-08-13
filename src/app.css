@@ -45,6 +45,7 @@ h1.header {
   text-align: center;
   line-height: 1;
   font-size: .75em;
+  opacity: 1 !important;
 }
 
 .leg-desc {
@@ -52,6 +53,7 @@ h1.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  opacity: 1 !important;
 }
 
 .line {
@@ -69,13 +71,14 @@ h1.header {
   line-height: 0;
   vertical-align: baseline;
   display: inline-block;
+  opacity: 1 !important;
 }
 
 .bill-year, .small-bill-year {
   position: relative;
   text-align: left;
   z-index: 12;
-  color: rgba(0,0,0,0.25);
+  opacity: 40%;
   font-family: "Libre Franklin", sans-serif;
   font-weight: 700;
 }
@@ -89,15 +92,16 @@ h1.header {
 .small-bill-year {
   font-size: 16px;
   top:8px;
-  left: 8px;
+  left: 2px;
 }
 
 .small-bill-state {
   position: absolute;
   z-index: 14;
-  color: rgba(0,0,0,0.25);
+  opacity: 40%;
   font-size: 30px;
   font-family: "Libre Franklin", sans-serif;
+  font-weight: bold;
   transform: translate(-50%, -50%);
   top: 50%;
   left: 50%;
@@ -109,8 +113,7 @@ h1.header {
   align-items: center;
   justify-content: center;
   max-width: 750px;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin: auto;
 }
 
 .bill-row {
@@ -185,11 +188,13 @@ h1.header {
 
 .small-bill-content {
   font-size: 0.05rem;
-  line-height: 1 !important; 
-  color: rgba(0,0,0,0.95); /* stronger color so it doesn't look washed out */
-
-  -webkit-font-smoothing: subpixel-antialiased; /* keeps static text rendering crisper on mac */
-
+  line-height: 1;
+}
+.small-bill-content.p {
+  font-size: 0.07rem;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
 }
 
 .small-bill-content-header {
@@ -199,6 +204,7 @@ h1.header {
 }
 
 .copied-language {
-   background-color: var(--leggreen);
-   font-weight: 700;
+   background-color: green;
+   font-weight: 700px;
+   opacity: 50%;
 }

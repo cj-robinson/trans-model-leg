@@ -35,12 +35,11 @@
             <div class="step-content">{@html text}</div>
           </div>
         {/each}
+        <div class="spacer"/>
       </Scrolly>
     </div>
     <div class="sticky">
-      <div class="container">
         <BillColdOpen step={value1} />
-        </div>
     </div>
   </div>
   <br />
@@ -78,6 +77,7 @@
             <div class="step-content">{@html text}</div>
           </div>
         {/each}
+        <div class="spacer" />
       </Scrolly>
     </div>
     <div class="sticky">

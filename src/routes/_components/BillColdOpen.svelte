@@ -28,6 +28,7 @@
   let intro_montana_step = 2;
   let change_text_step = 3;
   let add_small_bills_step = 4;
+
   onMount(async () => {
     // Fetch and parse CSV
     const billsResponse = await fetch(`${assets}/fiwsa_bills_with_highlights.csv`);
@@ -59,27 +60,22 @@
     // Update the bill objects with HTML content
     originalBill.html = originalActHTML;
     montanaBill.html = montanaActHTML;
-    let newBills = [];
-    newBills.push(originalBill); 
-    introBills = newBills;
-
   });
 
+  let introBills = [originalBill];
   let smallBills = [];
-  let introBills = [];
 
-
-  $: if (step !== undefined) {
+  $: {
     let newBills = [];
     let newSmallBills = [];
     // For steps 0-3, show bills traditionally with full HTML
-    if (step === undefined || step >=0) {
+    if (step >= 0) {
       newBills.push(originalBill);
     }
     if (step >= intro_montana_step && step < add_small_bills_step) {
       newBills.push(montanaBill);
     }
-    if (step >= add_small_bills_step || scrollDirection == "exit") {
+    if (step >= add_small_bills_step) {
       newSmallBills.push(billsData);
     }
     introBills = newBills;
@@ -110,58 +106,23 @@
       step >= zoom_step
     );
 
+    d3.selectAll(".chart-container").style(
+      "padding",
+      step >= add_small_bills_step ? "0 0" : "70px 0"
+    );
   });
 
   let width;
   let height;
-  let scrollReminderTimeout;
-  let showScrollReminder = false;
-let y = 0; // Initialize with 0 so isAtTop is true on initial load
-
-$: isAtTop = (y === undefined || y < 50); // Handle possible undefined value
-
-// Hide scroll reminder when user scrolls down
-$: if (!isAtTop && showScrollReminder) {
-  showScrollReminder = false;
-  if (scrollReminderTimeout) {
-    clearTimeout(scrollReminderTimeout);
-    scrollReminderTimeout = null;
-  }
-}
-
-// Setup timeout when component mounts
-onMount(() => {
-  // Start the timeout if step is undefined and we're at the top
-  if (step === undefined) {
-    scrollReminderTimeout = setTimeout(() => {
-      // Double-check we're still at top when timeout completes
-      if (isAtTop && step === undefined) {
-        showScrollReminder = true;
-      }
-    }, 5000); // 5 seconds
-  }
-  
-  // Cleanup function
-  return () => {
-    if (scrollReminderTimeout) clearTimeout(scrollReminderTimeout);
-  };
-});
 </script>
 
-<svelte:window bind:scrollY={y}/>
-
 <StepTracker {step} bind:scrollDirection />
-{#if showScrollReminder}
-  <div class="scroll-reminder" 
-       transition:fly={{ y: 20, duration: 400 }}>
-    <div class="scroll-icon">↓</div>
-    <div class="scroll-text">Scroll down to continue</div>
-  </div>
-{/if}
+
 <div
   class="chart-container"
   bind:offsetWidth={width}
   bind:offsetHeight={height}
+  style:padding={step >= add_small_bills_step ? "0 0" : "70px 0"}
 >
   <div class="bill-row">
     {#each introBills as bill, index (bill.id)}
@@ -178,8 +139,11 @@ onMount(() => {
         out:fly={{}}
       >
         <div class="bill-year">
-          {#if bill.id === "original" && step >= 4}
+          {#if bill.id === "original"}
             2020
+          {/if}
+          {#if bill.id === "montana"}
+            2021
           {/if}
         </div>
         <div
@@ -249,14 +213,6 @@ onMount(() => {
     background-position: right;
   }
 
-.chart-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 80vh; /* Use viewport height */
-  align-items: center;
-}  
-
   .zoom-in {
     animation: zoomIn 2000ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
   }
@@ -283,48 +239,7 @@ onMount(() => {
     }
   }
 
-
-  @keyframes highlight {
-    from {
-      background-position: right;
-    }
-    to {
-      background-position: left;
-    }
-  }
-
-
-  /* scroll reminder */
-  
-  .scroll-reminder {
-    position: fixed;
-    font-family: "Georgia", serif;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: var(--leggreen);
-    color: white;
-    padding: 0.8rem 1.5rem;
-    border-radius: 2rem;
-    opacity: .5;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .scroll-icon {
-    font-size: 1.5rem;
-    animation: bounce 1.5s infinite;
-  }
-  
-  .scroll-text {
-    font-size: 0.9rem;
-    font-weight: 500;
-  }
-  
-    @keyframes fadeHighlight {
+  @keyframes fadeHighlight {
     0% {
       opacity: 0;
     }
@@ -342,15 +257,12 @@ onMount(() => {
     }
   }
 
-  @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-      transform: translateY(0);
+  @keyframes highlight {
+    from {
+      background-position: right;
     }
-    40% {
-      transform: translateY(-5px);
-    }
-    60% {
-      transform: translateY(-3px);
+    to {
+      background-position: left;
     }
   }
 </style>
