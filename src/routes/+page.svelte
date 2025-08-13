@@ -78,7 +78,6 @@
             <div class="step-content">{@html text}</div>
           </div>
         {/each}
-        <div class="spacer" />
       </Scrolly>
     </div>
     <div class="sticky">

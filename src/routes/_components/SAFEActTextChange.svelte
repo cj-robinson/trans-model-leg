@@ -122,7 +122,6 @@
     }
     smallBills = newSmallBills[0];
     introBills = [...newBills];
-    console.log(`Current step: ${step}`);
   }
 
   afterUpdate(() => {
@@ -219,7 +218,7 @@
 <StepTracker {step} bind:scrollDirection />
 
 <div
-  class=""
+  class="chart-container-safe"
   bind:offsetWidth={width}
   bind:offsetHeight={height}
 >
