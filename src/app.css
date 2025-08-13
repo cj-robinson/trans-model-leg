@@ -1,13 +1,25 @@
 @import './normalize.css';
 
+:root {
+  --leggreen: #228B22;
+  /* --leggreen: red; */
+}
+
 h1,
 h2,
 h3 {
   font-family: "Libre Franklin", sans-serif;
 }
 
+h1 {
+  font-size: 3em;
+}
+
 .graphic-title {
   font-family: "Libre Franklin", sans-serif;
+   font-size: 18px;
+ 
+
   font-weight: 700;
   padding-bottom: 10px;
 }
@@ -23,6 +35,10 @@ p {
 
 .chart-container {
   padding: 70px 0;
+}
+
+a {
+  color: var(--leggreen) ;
 }
 /* bill styling */
 
@@ -115,7 +131,7 @@ h1.header {
 }
 
   .original-bill {
-    background-color: #fffff2;
+    background-color: #faf8f6;
   }
 
 

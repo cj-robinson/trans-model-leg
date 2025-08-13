@@ -16,7 +16,7 @@
 >
   <div class="method-header">
     <span class="toggle-icon">{expanded ? '−' : '+'}</span>
-    <h2>Methodology</h2>
+    <h3>Methodology</h3>
   </div>
   <div class="method-content" style="max-height: {expanded ? '500px' : '0'};">
     {#if expanded}

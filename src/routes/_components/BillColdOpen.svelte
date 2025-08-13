@@ -85,13 +85,13 @@
       .transition("y")
       .delay((d, i) => i * 100)
       .duration(100)
-      .style("color", step >= change_text_step ? "green" : "transparent");
+      .style("color", step >= change_text_step ? "var(--leggreen)" : "transparent");
 
     d3.select("#original-bill-title")
       .classed("highlight-bill-title", step >= zoom_step)      
       
     d3.selectAll(".chart-container")
-      .style("padding", step === add_small_bills_step ? "0 0" : "70px 0")
+      .style("padding", step >= add_small_bills_step ? "0 0" : "70px 0")
 
     // d3.selectAll(".bill")
     //   .transition("asdj")

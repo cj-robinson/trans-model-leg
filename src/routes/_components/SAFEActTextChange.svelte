@@ -24,13 +24,13 @@
   let miBill = { id: "", html: "" };
   let scBill = { id: "", html: "" };
 
-  let mi_bill_step = 1;
-  let scroll_step = 2;
-  let highlight_changed_text_step = 2;
-  let sc_bill_step = 5;
-  let sc_scroll_bill_step = 6;
-  let highlight_changed_text_step2 = 6;
-  let add_small_bills_step = 7;
+  let mi_bill_step = 2;
+  let scroll_step = 3;
+  let highlight_changed_text_step = 3;
+  let sc_bill_step = 6;
+  let sc_scroll_bill_step = 7;
+  let highlight_changed_text_step2 = 8;
+  let add_small_bills_step = 8;
 
   onMount(async () => {
     // Fetch and parse CSV
@@ -73,7 +73,10 @@
   $: {
     let newBills = [];
     let newSmallBills = [];
-    if (step >= 0) {
+    if (step === 0 | step === undefined) {
+      newBills = [];
+    }    
+    if (step >= 1) {
       newBills.push(akBill);
     }
     if (step >= mi_bill_step && step < sc_bill_step) {
@@ -109,29 +112,14 @@
     smallBills = newSmallBills[0];
     introBills = [...newBills];
     console.log(step);
+    console.log(smallBills);
   }
 
   afterUpdate(() => {
     d3.selectAll(".bill.scroll-bill").style(
       "overflow-y",
-      step < scroll_step || step === undefined ? "hidden" : "scroll"
+      step < scroll_step || step === undefined || step === highlight_changed_text_step + 1 ? "hidden" : "scroll"
     );
-
-    // setTimeout(() => {
-    // Fade out: select all fade-out spans, cascade by index
-
-    // // Fade out: select all fade-out spans, cascade by index
-    // d3.selectAll("p.bold")
-    //   .transition()
-    //   .duration(1000)
-    //   .style("font-weight", step === bold_text_step || step === bold_text_step2 ? "700" : "200")
-    //   }, 10);
-
-    // d3.selectAll(".added_text")
-    //   .transition()
-    //   .delay((d, i) => i * 100)
-    //   .duration(100)
-    //   .style("color", step >= highlight_changed_text_step ? "transparent" : "black");
 
     setTimeout(() => {
       // Fade out: select all fade-out spans, cascade by index
@@ -153,7 +141,7 @@
         .duration(100)
         .style(
           "color",
-          step >= highlight_changed_text_step ? "green" : "transparent"
+          step >= highlight_changed_text_step ? "var(--leggreen)" : "transparent"
         );
     }, 2000);
 
@@ -189,7 +177,7 @@
         .duration(100)
         .style(
           "color",
-          step >= highlight_changed_text_step2 ? "green" : "transparent"
+          step >= highlight_changed_text_step2 ? "var(--leggreen)" : "transparent"
         );
     }, 1000);
 

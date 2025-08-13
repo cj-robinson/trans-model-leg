@@ -22,6 +22,10 @@
   const safe_steps = Object.values(doc.safegraphic[0]);
 </script>
 
+<svelte:head>
+  <title>The Legislative Network Behind State Trans Laws</title>
+</svelte:head>
+
 <section>
   <div class="section-container">
     <div class="steps-container">
@@ -43,12 +47,13 @@
 
   <div class="body-text">
     <div class="hero">
-      <h1>{@html doc.headline}</h1>
-      <h2>{@html doc.leadin}</h2>
-      <h3>By C.J. Robinson</h3>
-      <br />
+      {@html doc.headline}
     </div>
+    <p><a href="https://cj-robinson.github.io">By C.J. Robinson</a></p>
     <div>{@html doc.intro}</div>
+   
+    <div class='graphic-title'>Anti-LGBTQ legislation significantly increased in recent years</div>
+    <div class='graphic-sub'>Number of anti-LGBTQ legislation introduced in the United States, as tracked by the ACLU</div> 
     <ACLUChart />
     <br />
     <div>{@html doc.intro2}</div>
@@ -132,7 +137,6 @@
   }
 
   .section-container {
-    margin-top: 1em;
     text-align: center;
     transition: background 100ms;
     display: flex;
