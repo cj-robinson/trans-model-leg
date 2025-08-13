@@ -219,7 +219,7 @@
 <StepTracker {step} bind:scrollDirection />
 
 <div
-  class="chart-container"
+  class=""
   bind:offsetWidth={width}
   bind:offsetHeight={height}
 >
