@@ -5,8 +5,34 @@
   import Papa from "papaparse";
   import { flip } from "svelte/animate";
   import { assets } from "$app/paths";
+  import { beforeUpdate } from "svelte";
+
 
   export let step;
+  let previousStep = undefined;
+  $: scrollDirection = "";
+
+  beforeUpdate(() => {
+    // Capture the value before the update
+    previousStep = step;
+  });
+
+  $: {
+    if (step !== previousStep) {
+      // Only compare when both are defined numbers
+      if (step !== undefined && previousStep !== undefined) {
+        scrollDirection = step > previousStep ? "down" : "up";
+      }
+      // Create special case for when step becomes undefined
+      else if (step === undefined && previousStep !== undefined) {
+        scrollDirection = "exit"; // New state for exiting
+      }
+      // Log both values to help debug
+      console.log(
+        `Direction: ${scrollDirection}, Previous: ${previousStep}, Current: ${step}`
+      );
+    }
+  }
 
   let billsData = [];
   let originalActHTML = "";
@@ -57,13 +83,13 @@
     let newBills = [];
     let newSmallBills = [];
     // For steps 0-3, show bills traditionally with full HTML
-    if (step >= 0) {
+    if (step >= 0 || scrollDirection === "exit") {
       newBills.push(originalBill);
     }
     if (step >= intro_montana_step && step < add_small_bills_step) {
       newBills.push(montanaBill);
     }
-    if (step >= add_small_bills_step) {
+    if (step >= add_small_bills_step || scrollDirection === "exit") {
       newSmallBills.push(billsData);
     }
     introBills = newBills;
@@ -135,7 +161,7 @@
         <div
           class="bill"
           class:original-bill={bill.id === "original"}
-          style:height={step >= add_small_bills_step ? "200px" : "400px"}
+          style:height={step >= add_small_bills_step || scrollDirection === "exit"? "200px" : "400px"}
           style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"
         >
           <div class="bill-content" class:montana-bill={bill.id === "montana"}>
@@ -147,7 +173,16 @@
   </div>
   <div class="bill-box">
     {#each smallBills as bill, index (bill.bill_id)}
-      <div class="small-container" animate:flip={{}} in:fly={{}}>
+      <div
+        class="small-container"
+        animate:flip={{}}
+        in:fly={{
+          x: 0,
+          y: 40,
+          duration: 600,
+          delay: index * 120,
+        }}
+      >
         <div class="small-bill-year">
           {bill.year_start}
         </div>

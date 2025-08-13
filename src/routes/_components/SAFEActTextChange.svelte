@@ -8,8 +8,34 @@
   import Papa from "papaparse";
   import { flip } from "svelte/animate";
   import { assets } from "$app/paths";
+  import { beforeUpdate } from "svelte";
 
   export let step;
+
+  let previousStep = undefined;
+  $: scrollDirection = "";
+
+  beforeUpdate(() => {
+    // Capture the value before the update
+    previousStep = step;
+  });
+
+  $: {
+    if (step !== previousStep) {
+      // Only compare when both are defined numbers
+      if (step !== undefined && previousStep !== undefined) {
+        scrollDirection = step > previousStep ? "down" : "up";
+      }
+      // Create special case for when step becomes undefined
+      else if (step === undefined && previousStep !== undefined) {
+        scrollDirection = "exit"; // New state for exiting
+      }
+      // Log both values to help debug
+      console.log(
+        `Direction: ${scrollDirection}, Previous: ${previousStep}, Current: ${step}`
+      );
+    }
+  }
 
   let billsData = [];
   let akActResponse = "";
@@ -29,7 +55,7 @@
   let highlight_changed_text_step = 3;
   let sc_bill_step = 6;
   let sc_scroll_bill_step = 7;
-  let highlight_changed_text_step2 = 8;
+  let highlight_changed_text_step2 = 7;
   let add_small_bills_step = 8;
 
   onMount(async () => {
@@ -73,10 +99,10 @@
   $: {
     let newBills = [];
     let newSmallBills = [];
-    if ((step === 0) | (step === undefined)) {
-      newBills = [];
-    }
-    if (step >= 1) {
+    // if ((step === 0) | (step === undefined)) {
+    //   newBills = [];
+    // }
+    if (step >= 1 || scrollDirection === "exit") {
       newBills.push(akBill);
     }
     if (step >= mi_bill_step && step < sc_bill_step) {
@@ -100,19 +126,18 @@
       scrollTo(scrollBillNodes[0], 0);
       scrollTo(scrollBillNodes[1], 0);
     }
-    if (step >= add_small_bills_step) {
+    if (step >= add_small_bills_step || scrollDirection === "exit") {
       newSmallBills.push(billsData);
     }
-    if (step < add_small_bills_step) {
-      newSmallBills = [0];
-    }
+    // if (step < add_small_bills_step) {
+    //   newSmallBills = [0];
+    // }
     if (step === add_small_bills_step) {
       scrollTo(scrollBillNodes[0], 0);
     }
     smallBills = newSmallBills[0];
     introBills = [...newBills];
-    console.log(step);
-    console.log(smallBills);
+    console.log(`Current step: ${step}`);
   }
 
   afterUpdate(() => {
@@ -242,7 +267,7 @@
           class="bill scroll-bill"
           class:original-bill={bill.id === "ak"}
           bind:this={scrollBillNodes[index]}
-          style:height={step >= add_small_bills_step ? "200px" : "400px"}
+          style:height={step >= add_small_bills_step || scrollDirection === "exit"? "200px" : "400px"}
           style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"
         >
           <div class="bill-content">
@@ -254,7 +279,16 @@
   </div>
   <div class="bill-box">
     {#each smallBills as bill, index (bill.bill_id)}
-      <div class="small-container" animate:flip={{}} in:fly={{}}>
+      <div
+        class="small-container"
+        animate:flip={{}}
+        in:fly={{
+          x: 0,
+          y: 40,
+          duration: 600,
+          delay: index * 60,
+        }}
+      >
         <div class="small-bill-year">
           {bill.year_start}
         </div>

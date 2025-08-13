@@ -33,9 +33,6 @@ p {
   line-height: 1.5;
 }
 
-.chart-container {
-  padding: 70px 0;
-}
 
 a {
   color: var(--leggreen) ;
