@@ -224,7 +224,7 @@
 			<p class="g-pstyle0">&ldquo;Fairness in Women&rsquo;s Sports Act&rdquo; </p>
 		</div>
 		<div id="g-ai0-2" class="g-Layer_1 g-aiAbs g-aiPointText" style="top:5.9993%;margin-top:-9.3px;left:53.6%;width:335px;">
-			<p class="g-pstyle0">&ldquo;Save Adolecents From Experimentation Act&rdquo; </p>
+			<p class="g-pstyle0">&ldquo;Save Adolescents From Experimentation Act&rdquo; </p>
 		</div>
 	</div>
 
@@ -236,7 +236,7 @@
 			<p class="g-pstyle0">&ldquo;Fairness in Women&rsquo;s Sports Act&rdquo; </p>
 		</div>
 		<div id="g-ai1-2" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:56.5605%;margin-top:-17.7px;left:8.232%;width:335px;">
-			<p class="g-pstyle0">&ldquo;Save Adolecents From Experimentation Act&rdquo; </p>
+			<p class="g-pstyle0">&ldquo;Save Adolescents From Experimentation Act&rdquo; </p>
 		</div>
 	</div>
 
