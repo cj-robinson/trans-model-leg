@@ -162,7 +162,6 @@ onMount(() => {
   class="chart-container"
   bind:offsetWidth={width}
   bind:offsetHeight={height}
-  style:padding={step >= add_small_bills_step ? "0 0" : "70px 0"}
 >
   <div class="bill-row">
     {#each introBills as bill, index (bill.id)}
@@ -179,11 +178,8 @@ onMount(() => {
         out:fly={{}}
       >
         <div class="bill-year">
-          {#if bill.id === "original"}
+          {#if bill.id === "original" && step >= 4}
             2020
-          {/if}
-          {#if bill.id === "montana"}
-            2021
           {/if}
         </div>
         <div
@@ -257,7 +253,8 @@ onMount(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 100vh; /* Use viewport height */
+  min-height: 80vh; /* Use viewport height */
+  align-items: center;
 }  
 
   .zoom-in {
@@ -286,23 +283,6 @@ onMount(() => {
     }
   }
 
-  @keyframes fadeHighlight {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
 
   @keyframes highlight {
     from {
@@ -326,7 +306,7 @@ onMount(() => {
     color: white;
     padding: 0.8rem 1.5rem;
     border-radius: 2rem;
-    opacity: 50%;
+    opacity: .5;
     display: flex;
     align-items: center;
     gap: 0.8rem;
@@ -344,6 +324,24 @@ onMount(() => {
     font-weight: 500;
   }
   
+    @keyframes fadeHighlight {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
   @keyframes bounce {
     0%, 20%, 50%, 80%, 100% {
       transform: translateY(0);
