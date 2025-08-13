@@ -69,13 +69,13 @@
     let newBills = [];
     let newSmallBills = [];
     // For steps 0-3, show bills traditionally with full HTML
-    if (step >= 0 || scrollDirection === "exit") {
+    if (step >= 0) {
       newBills.push(originalBill);
     }
     if (step >= intro_montana_step && step < add_small_bills_step) {
       newBills.push(montanaBill);
     }
-    if (step >= add_small_bills_step || scrollDirection === "exit") {
+    if (step >= add_small_bills_step) {
       newSmallBills.push(billsData);
     }
     introBills = newBills;
@@ -89,7 +89,7 @@
       .transition()
       .delay((d, i) => i * 100)
       .duration(100)
-      .style("color", step >= change_text_step || scrollDirection === "exit" ? "transparent" : "black");
+      .style("color", step >= change_text_step ? "transparent" : "black");
 
     // Fade in: select all fade-in spans, cascade by index
     d3.selectAll('[class^="ngram-text-fade-in-"]')
@@ -98,7 +98,7 @@
       .duration(100)
       .style(
         "background-color",
-        step >= change_text_step || scrollDirection === "exit" ? "var(--leggreen)" : "transparent"
+        step >= change_text_step? "var(--leggreen)" : "transparent"
       );
 
     d3.select("#original-bill-title").classed(
@@ -108,7 +108,7 @@
 
     d3.selectAll(".chart-container").style(
       "padding",
-      step >= add_small_bills_step  || scrollDirection === "exit" ? "0 0" : "70px 0"
+      step >= add_small_bills_step ? "0 0" : "70px 0"
     );
   });
 
@@ -198,7 +198,7 @@
   :global(.montana-bill [class^="ngram-text-fade-in-"]) {
     color: white;
     border-radius: 2px;
-    
+
   }
   :global(.bill) {
     transform: scale(1, 1);

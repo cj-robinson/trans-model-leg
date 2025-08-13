@@ -35,10 +35,13 @@
             <div class="step-content">{@html text}</div>
           </div>
         {/each}
+        <div class="spacer"/>
       </Scrolly>
     </div>
     <div class="sticky">
-      <BillColdOpen step={value1} />
+      <div class="container">
+        <BillColdOpen step={value1} />
+      </div>
     </div>
   </div>
   <br />
@@ -80,7 +83,7 @@
       </Scrolly>
     </div>
     <div class="sticky">
-      <SAFEActTextChange step={value2} />
+        <SAFEActTextChange step={value2} />
     </div>
   </div>
   <div class="body-text">
@@ -115,6 +118,10 @@
     font-family: "Georgia", serif;
     font-optical-sizing: auto;
     font-style: normal;
+  }
+
+  .container {
+    height: 100vh;
   }
 
   .body-text {
