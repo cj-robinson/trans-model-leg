@@ -284,7 +284,7 @@
             {bill.state}
           </div>
           <div class="small-bill-content">
-            {bill.text}
+            {@html bill.html}
           </div>
         </div>
       </div>
