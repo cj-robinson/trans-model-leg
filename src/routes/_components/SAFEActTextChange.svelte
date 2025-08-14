@@ -117,7 +117,7 @@
     // if (step < add_small_bills_step) {
     //   newSmallBills = [0];
     // }
-    if (step === add_small_bills_step) {
+    if (step >= add_small_bills_step) {
       scrollTo(scrollBillNodes[0], 0);
     }
     smallBills = newSmallBills[0];
