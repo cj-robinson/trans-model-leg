@@ -4,7 +4,10 @@
 
 <h3>Methodology</h3>
 <p>{@html doc.methodology}</p>
-
+<a href="https://github.com/cj-robinson/model-leg-analysis" target="_blank">Find the GitHub repo here</a>
+<br>
+<br>
+<br>
 <style>
   .method-box {
     border: 2px solid;
