@@ -1,29 +1,9 @@
 <script>
   import doc from "../_data/doc.json";
-
-  let expanded = false;
-
-  function toggleBox() {
-    expanded = !expanded;
-  }
 </script>
 
-<div 
-  class="method-box"
-  on:click={toggleBox}
-  aria-expanded={expanded}
-  style="cursor: pointer;"
->
-  <div class="method-header">
-    <span class="toggle-icon">{expanded ? '−' : '+'}</span>
-    <h3>Methodology</h3>
-  </div>
-  <div class="method-content" style="max-height: {expanded ? '500px' : '0'};">
-    {#if expanded}
-      <p>{@html doc.methodology}</p>
-    {/if}
-  </div>
-</div>
+<h3>Methodology</h3>
+<p>{@html doc.methodology}</p>
 
 <style>
   .method-box {
@@ -31,7 +11,7 @@
     max-width: 700px;
     overflow: hidden;
     transition: box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     margin-bottom: 1em;
   }
   .method-header {

@@ -153,7 +153,7 @@ function fetchAndSaveDoc() {
               if (aTag.attribs.href && url.parse(aTag.attribs.href,true).query && url.parse(aTag.attribs.href,true).query.q) {
                 href = url.parse(aTag.attribs.href,true).query.q;
               }
-              var str = '<a href="' + href + '">';
+              var str = '<a href="' + href + '" target="_blank" rel="noopener noreferrer">';
               str += tagHandlers._base(aTag);
               str += '</a>';
               return str;
@@ -261,7 +261,7 @@ function fetchAndSaveDoc() {
               if (aTag.attribs.href && url.parse(aTag.attribs.href,true).query && url.parse(aTag.attribs.href,true).query.q) {
                 href = url.parse(aTag.attribs.href,true).query.q;
               }
-              var str = '<a href="' + href + '">';
+              var str = '<a href="' + href + '" target="_blank" rel="noopener noreferrer">';
               str += tagHandlers._base(aTag);
               str += '</a>';
               return str;

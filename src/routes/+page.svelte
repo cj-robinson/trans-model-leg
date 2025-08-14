@@ -90,8 +90,6 @@
     <p>{@html doc.fiwsa}</p>
     <h3>{@html doc.kicker}</h3>
     <p>{@html doc.rep1}</p>
-
-    <br />
     <div class="graphic-title">
       Model Legislation is Introduced Around the Country, Often by Less
       Well-Resourced Legislatures
@@ -101,11 +99,11 @@
       model bills
     </div>
     <Map />
-    <br />
     <p>{@html doc.rep2}</p>
     <br />
     <br />
     <br />
+    <hr>
     <Methodology />
   </div>
 </section>
@@ -210,7 +208,7 @@
     width: 700px;
     margin-left: 1.3em;
     margin-right: 1.3em;
-    text-align: center;
+    text-align: left;
     padding: 1.2em !important;
   }
 

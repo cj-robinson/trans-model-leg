@@ -145,7 +145,7 @@
           "color",
           step >= highlight_changed_text_step ? "transparent" : "black"
         );
-    }, 2000);
+    }, 1000);
 
     setTimeout(() => {
       // Fade in: select all fade-in spans, cascade by index
@@ -159,7 +159,7 @@
             ? "var(--leggreen)"
             : "transparent"
         );
-    }, 2000);
+    }, 1000);
 
     // Fade in: select all fade-in spans, cascade by index
     d3.selectAll(".transparent")
