@@ -73,7 +73,7 @@
     <h3>{@html doc.safesubtitle}</h3>
     <div>{@html doc.safeactintro}</div>
   </div>
-  <div class="section-container">
+  <div class="section-container safe-act-section">
     <div class="steps-container">
       <div class="spacer" />
       <Scrolly bind:value={value2}>
@@ -121,8 +121,10 @@
     font-style: normal;
   }
 
-  .container {
-    height: 100vh;
+  
+  .safe-act-section {
+    min-height: 120vh; /* Adjust this value based on testing */
+    transition: height 1.5s ease;
   }
 
   .body-text {
