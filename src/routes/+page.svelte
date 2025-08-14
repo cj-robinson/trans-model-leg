@@ -20,6 +20,10 @@
 
   // Extract steps from the first object in the safesteps array
   const safe_steps = Object.values(doc.safegraphic[0]);
+  onMount(() => {
+    // Scroll the page down 50px when component mounts
+    window.scrollTo(0,200);
+  });  
 </script>
 
 <svelte:head>
