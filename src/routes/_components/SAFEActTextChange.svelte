@@ -36,6 +36,11 @@
   let sc_scroll_bill_step = 7;
   let highlight_changed_text_step2 = 7;
   let add_small_bills_step = 8;
+  let maxStep = 0;
+
+  $: if (step>0 && step >= maxStep) {
+    maxStep = step;
+  }
 
   onMount(async () => {
     // Fetch and parse CSV
@@ -89,6 +94,7 @@ const scrollTo = (billId, top) => {
 
   let introBills = [akBill];
   let smallBills = [];
+  
 
   $: {
     let newBills = [];
@@ -96,7 +102,7 @@ const scrollTo = (billId, top) => {
     // if ((step === 0) | (step === undefined)) {
     //   newBills = [];
     // }
-    if (step >= 1 || scrollDirection === "exit") {
+    if (step >= 1 || scrollDirection === "exit"  || maxStep === 9) {
       newBills.push(akBill);
     }
     if (step >= mi_bill_step && step < sc_bill_step) {
@@ -120,7 +126,7 @@ const scrollTo = (billId, top) => {
       scrollTo("ak", 0);
       scrollTo("sc", 0);
     }
-    if (step >= add_small_bills_step || scrollDirection === "exit") {
+    if (step >= add_small_bills_step || scrollDirection === "exit" || maxStep === 9) {
       newSmallBills.push(billsData);
     }
     // if (step < add_small_bills_step) {
