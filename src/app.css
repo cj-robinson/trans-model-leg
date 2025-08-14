@@ -44,6 +44,10 @@ p {
 a {
   color: var(--leggreen) ;
 }
+
+.bill-sticky-container {
+  height: 100vh;
+}
 /* bill styling */
 
 h1.header {

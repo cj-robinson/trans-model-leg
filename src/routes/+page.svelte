@@ -39,13 +39,14 @@
       </Scrolly>
     </div>
     <div class="sticky">
+      <div class="bill-sticky-container">
         <BillColdOpen step={value1} />
+      </div>  
     </div>
   </div>
   <br />
   <br />
   <br />
-
   <div class="body-text">
     <div class="hero">
       {@html doc.headline}
