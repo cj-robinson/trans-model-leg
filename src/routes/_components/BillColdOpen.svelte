@@ -139,11 +139,8 @@
         out:fly={{}}
       >
         <div class="bill-year">
-          {#if bill.id === "original"}
-            2020
-          {/if}
-          {#if bill.id === "montana"}
-            2021
+          {#if bill.id === "original" && step >= 4}
+          2020
           {/if}
         </div>
         <div

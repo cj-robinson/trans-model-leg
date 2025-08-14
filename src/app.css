@@ -78,7 +78,7 @@ h1.header {
   position: relative;
   text-align: left;
   z-index: 12;
-  opacity: 40%;
+  opacity: 25%;
   font-family: "Libre Franklin", sans-serif;
   font-weight: 700;
 }
@@ -92,7 +92,7 @@ h1.header {
 .small-bill-year {
   font-size: 16px;
   top:8px;
-  left: 2px;
+  left: 6px;
 }
 
 .small-bill-state {
@@ -101,7 +101,6 @@ h1.header {
   opacity: 40%;
   font-size: 30px;
   font-family: "Libre Franklin", sans-serif;
-  font-weight: bold;
   transform: translate(-50%, -50%);
   top: 50%;
   left: 50%;
