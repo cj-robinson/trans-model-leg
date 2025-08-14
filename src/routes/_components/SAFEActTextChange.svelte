@@ -66,17 +66,26 @@
   });
 
   let scrollBillNodes = []; // Array to hold references to all bill nodes
-
-  const scrollTo = (node, top) => {
-    const scroll = () =>
-      node.scroll({
-        top: top,
-        behavior: "smooth",
-      });
-    scroll();
-
-    return { update: scroll };
+  const getBillIndex = (billId) => {
+    return introBills.findIndex(bill => bill.id === billId);
   };
+
+const scrollTo = (billId, top) => {
+  const index = getBillIndex(billId);
+  if (index === -1) return; // Bill not found
+      
+  const node = scrollBillNodes[index]; // Use the index to access the node
+  if (!node) return; // Guard against missing nodes
+  
+  const scroll = () =>
+    node.scroll({
+      top: top,
+      behavior: "smooth",
+    });
+  scroll();
+
+  return { update: scroll };
+};
 
   let introBills = [akBill];
   let smallBills = [];
@@ -94,22 +103,22 @@
       newBills.push(miBill);
     }
     if (step === scroll_step) {
-      scrollTo(scrollBillNodes[0], 3750);
-      scrollTo(scrollBillNodes[1], 2020);
+      scrollTo("ak", 3750);
+      scrollTo("mi", 2020);
     }
     if (step === scroll_step - 1 || step === sc_bill_step) {
-      scrollTo(scrollBillNodes[0], 0);
+      scrollTo("ak", 0);
     }
     if (step >= sc_bill_step && step < add_small_bills_step) {
       newBills.push(scBill);
     }
     if (step === sc_scroll_bill_step) {
-      scrollTo(scrollBillNodes[0], 2800);
-      scrollTo(scrollBillNodes[1], 1730);
+      scrollTo("ak", 2800);
+      scrollTo("sc", 1730);
     }
     if (step === sc_scroll_bill_step - 1) {
-      scrollTo(scrollBillNodes[0], 0);
-      scrollTo(scrollBillNodes[1], 0);
+      scrollTo("ak", 0);
+      scrollTo("sc", 0);
     }
     if (step >= add_small_bills_step || scrollDirection === "exit") {
       newSmallBills.push(billsData);
@@ -118,7 +127,7 @@
     //   newSmallBills = [0];
     // }
     if (step >= add_small_bills_step) {
-      scrollTo(scrollBillNodes[0], 0);
+      scrollTo("ak", 0);
     }
     smallBills = newSmallBills[0];
     introBills = [...newBills];
