@@ -45,6 +45,7 @@
 
   gtag('config', 'G-4JTFZ7D4W6');
 </script>
+</svelte:head>
 
 <section>
   <div class="section-container">
