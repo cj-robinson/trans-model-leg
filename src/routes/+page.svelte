@@ -29,7 +29,14 @@
 
 <svelte:head>
   <title>The Legislative Network Behind State Trans Laws</title>
-  <!-- Google tag (gtag.js) -->
+
+    <meta property="og:title" content="The Legislative Network Behind State Trans Laws">
+    <meta property="og:description" content="A new data-driven analysis reveals how state transgender policies utilize language sourced from lobbying groups and disseminated throughout state legislator networks.">
+    <meta property=" og:type" content="article">
+    <meta property="og:image" content="https://cj-robinson.github.io/trans-model-leg/">
+    <meta name="twitter:creator" content="@_cjrobinson">
+
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4JTFZ7D4W6"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -38,18 +45,8 @@
 
   gtag('config', 'G-4JTFZ7D4W6');
 </script>
-</svelte:head>
 
 <section>
-    <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1ZP391TG23"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-1ZP391TG23');
-  </script>
   <div class="section-container">
     <div class="steps-container">
       <Scrolly bind:value={value1}>
