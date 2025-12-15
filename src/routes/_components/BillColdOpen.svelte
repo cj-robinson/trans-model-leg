@@ -29,7 +29,14 @@
   let change_text_step = 3;
   let add_small_bills_step = 4;
 
+  let isMobile = false;
+  
   onMount(async () => {
+    // Get screen width to see if mobile
+    const screenWidth = window.innerWidth;
+    if (screenWidth <= 600) {
+      isMobile = true;
+    }
     // Fetch and parse CSV
     const billsResponse = await fetch(`${assets}/fiwsa_bills_with_highlights.csv`);
     const billsCsvText = await billsResponse.text();
@@ -146,10 +153,7 @@
         <div
           class="bill"
           class:original-bill={bill.id === "original"}
-          style:height={step >= add_small_bills_step ||
-          scrollDirection === "exit"
-            ? "200px"
-            : "400px"}
+          class:minimized={step >= add_small_bills_step}
           style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"
         >
           <div class="bill-content" class:montana-bill={bill.id === "montana"}>
@@ -261,5 +265,45 @@
     to {
       background-position: left;
     }
+  }
+  :global(.bill) {
+      height: 400px;
+  }
+  :global(.bill.minimized) {
+    height: 200px;
+  }
+
+  @media (max-width: 600px) {
+    .bill-row {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .bill-container {
+      will-change: transform;
+      
+    }
+  
+    @keyframes zoomIn {
+      from {
+        transform: scale(1);
+      }
+      to {
+        transform: scale(1.5);
+      }
+    }
+
+    @keyframes zoomOut {
+      from {
+        transform: scale(1.5);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+    :global(.bill) {
+      height: 300px;
+    }
+
   }
 </style>

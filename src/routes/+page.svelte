@@ -30,21 +30,21 @@
 <svelte:head>
   <title>The Legislative Network Behind State Trans Laws</title>
 
-    <meta property="og:title" content="The Legislative Network Behind State Trans Laws">
-    <meta property="og:description" content="A new data-driven analysis reveals how state transgender policies utilize language sourced from lobbying groups and disseminated throughout state legislator networks.">
-    <meta property=" og:type" content="article">
-    <meta property="og:image" content="https://cj-robinson.github.io/trans-model-leg/">
-    <meta name="twitter:creator" content="@_cjrobinson">
+  <meta property="og:title" content="The Legislative Network Behind State Trans Laws">
+  <meta property="og:description" content="A new data-driven analysis reveals how state transgender policies utilize language sourced from lobbying groups and disseminated throughout state legislator networks.">
+  <meta property=" og:type" content="article">
+  <meta property="og:image" content="https://cj-robinson.github.io/trans-model-leg/">
+  <meta name="twitter:creator" content="@_cjrobinson">
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-4JTFZ7D4W6"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4JTFZ7D4W6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-  gtag('config', 'G-4JTFZ7D4W6');
-</script>
+    gtag('config', 'G-4JTFZ7D4W6');
+  </script>
 </svelte:head>
 
 <section>
@@ -213,6 +213,7 @@
   }
 
   .steps-container {
+    width: 100%;
     transform: translate3d(0, 0, 0);
     position: relative;
     padding: 0;
@@ -245,6 +246,17 @@
   .sticky {
     width: 95%;
     margin: auto;
+  }
+
+  @media (max-width: 600px) {
+  .sticky {
+      top: 0%;
+    }
+  .body-text {
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+  }
+  
   }
   /* } */
 </style>

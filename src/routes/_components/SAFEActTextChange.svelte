@@ -42,7 +42,12 @@
     maxStep = step;
   }
 
+  let isMobile = false;
   onMount(async () => {
+    const screenWidth = window.innerWidth;
+    if (screenWidth <= 600) {
+      isMobile = true;
+    }
     // Fetch and parse CSV
     const billsResponse = await fetch(`${assets}/safe_act_with_highlights.csv`);
     const billsCsvText = await billsResponse.text();
@@ -108,9 +113,13 @@ const scrollTo = (billId, top) => {
     if (step >= mi_bill_step && step < sc_bill_step) {
       newBills.push(miBill);
     }
-    if (step === scroll_step) {
+    if (step === scroll_step && isMobile === false) {
       scrollTo("ak", 3750);
       scrollTo("mi", 2020);
+    }
+    if (step === scroll_step && isMobile === false) {
+      scrollTo("ak", 3750);
+      scrollTo("mi", 2000);
     }
     if (step === scroll_step - 1 || step === sc_bill_step) {
       scrollTo("ak", 0);
@@ -269,7 +278,7 @@ const scrollTo = (billId, top) => {
           class="bill scroll-bill"
           class:original-bill={bill.id === "ak"}
           bind:this={scrollBillNodes[index]}
-          style:height={step >= add_small_bills_step || scrollDirection === "exit"? "200px" : "400px"}
+          class:minimized={step >= add_small_bills_step}
           style:transition="height 1000ms cubic-bezier(0.33, 1, 0.68, 1)"
         >
           <div class="bill-content">
@@ -329,5 +338,24 @@ const scrollTo = (billId, top) => {
 
   :global([class^="ngram-text-fade-in-"]) {
     font-weight: 200 !important;
+  }
+  :global(.bill) {
+      height: 400px;
+  }
+  :global(.bill.minimized) {
+    height: 200px;
+  }
+  @media (max-width: 600px) {
+    .bill-row {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .bill-container {
+      will-change: transform;
+    }
+    :global(.bill) {
+      height: 300px;
+    }
   }
 </style>
