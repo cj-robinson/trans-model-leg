@@ -246,6 +246,8 @@ const scrollTo = (billId, top) => {
   class="chart-container"
   bind:offsetWidth={width}
   bind:offsetHeight={height}
+  class:chart-container-padding={step >= add_small_bills_step || step < add_small_bills_step}
+
 >
   <div class="bill-row">
     {#each introBills as bill, index (bill.id)}
@@ -345,11 +347,38 @@ const scrollTo = (billId, top) => {
   :global(.bill.minimized) {
     height: 200px;
   }
+  .chart-container-padding {
+    padding: 70px 0;
+  }
   @media (max-width: 600px) {
+      .chart-container {
+    min-height: 100vh;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .chart-container-padding {
+    padding: 0px 0;
+  }
+
+  .chart-container .bill-row {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    display: flex;
+  }
     .bill-row {
       flex-direction: column;
       align-items: center;
+      will-change: transform;
+
     }
+    /* .chart-container {
+      will-change: transform;
+    } */
 
     .bill-container {
       will-change: transform;
