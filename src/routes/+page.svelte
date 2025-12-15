@@ -26,11 +26,30 @@
   });  
 </script>
 
+
 <svelte:head>
   <title>The Legislative Network Behind State Trans Laws</title>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4JTFZ7D4W6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4JTFZ7D4W6');
+</script>
 </svelte:head>
 
 <section>
+    <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1ZP391TG23"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-1ZP391TG23');
+  </script>
   <div class="section-container">
     <div class="steps-container">
       <Scrolly bind:value={value1}>
@@ -55,7 +74,7 @@
     <div class="hero">
       {@html doc.headline}
     </div>
-    <p><a href="https://cj-robinson.github.io">By C.J. Robinson</a></p>
+    <p>By <a href="https://cj-robinson.github.io">C.J. Robinson</a></p>
     <div>{@html doc.intro}</div>
 
     <div class="graphic-title">
@@ -110,6 +129,8 @@
     <br />
     <hr>
     <Methodology />
+    <hr>
+    <p>{@html doc.acknowledge}</p>   
   </div>
 </section>
 
