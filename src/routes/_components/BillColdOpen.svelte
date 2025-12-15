@@ -274,6 +274,21 @@
   }
 
   @media (max-width: 600px) {
+  .chart-container {
+    height: 100vh - 70px;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .chart-container .bill-row {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    display: flex;
+  }
     .bill-row {
       flex-direction: column;
       align-items: center;
